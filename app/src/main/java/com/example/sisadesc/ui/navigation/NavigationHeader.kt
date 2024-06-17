@@ -1,62 +1,76 @@
 package com.example.sisadesc.ui.navigation
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DrawerState
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarColors
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import coil.compose.AsyncImagePainter
 import coil.compose.SubcomposeAsyncImage
 import coil.compose.SubcomposeAsyncImageContent
-import com.example.sisadesc.R
-import com.example.sisadesc.ui.home.HomeViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NavigationHeader(
-    navController: NavController, viewModel: HomeViewModel,
-    navigationViewModel: NavigationViewModel, title: String
+    title: String,
+    avatarUrl: String?,
+    scope: CoroutineScope,
+    drawerState: DrawerState,
 ) {
-    val userData by viewModel.userData.observeAsState(initial = null)
-    HeaderScreen(userData?.avatarUrl, title, navigationViewModel)
+    TopAppBar(
+        title = { Text(text = title, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth()) },
+        navigationIcon = {
+            IconButton(onClick = { scope.launch { drawerState.open() } }) {
+                Icon(
+                    imageVector = Icons.Default.Menu,
+                    contentDescription = "Menu"
+                )
+            }
+        },
+        actions = {
+            IconButton(onClick = { scope.launch { drawerState.close() } }) {
+                if (avatarUrl != null) {
+                    AvatarUser(avatarUrl)
+                }
+                else {
+                    Icon(
+                        imageVector = Icons.Default.AccountCircle,
+                        contentDescription = "Icon user default"
+                    )
+                }
+            }
+        },
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = Color.White
+        )
+    )
 }
 
 @Composable
-fun HeaderScreen(avatarUrl: String?, title: String, navigationViewModel: NavigationViewModel) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(Color.White)
-            .padding(start = 10.dp, end = 10.dp, top = 25.dp, bottom = 8.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Menu()
-        Text(text = title)
-        AvatarUser(avatarUrl, navigationViewModel)
-    }
-}
-
-@Composable
-fun AvatarUser(url: String?, navigationViewModel: NavigationViewModel) {
-
+fun AvatarUser(avatarUrl: String) {
     Surface(
         modifier = Modifier
             .size(50.dp)
@@ -64,7 +78,7 @@ fun AvatarUser(url: String?, navigationViewModel: NavigationViewModel) {
             .clickable { }
     ) {
         SubcomposeAsyncImage(
-            model = url,
+            model = avatarUrl,
             contentDescription = "Imagen del usuario",
             contentScale = ContentScale.Crop,
         ) {
@@ -75,22 +89,5 @@ fun AvatarUser(url: String?, navigationViewModel: NavigationViewModel) {
                 SubcomposeAsyncImageContent()
             }
         }
-    }
-}
-
-@Composable
-fun Menu() {
-    Surface(
-        modifier = Modifier
-            .size(50.dp)
-            .clip(CircleShape)
-            .clickable { }
-            .padding(5.dp)
-    ) {
-        Image(
-            painterResource(id = R.drawable.icon_more),
-            contentDescription = "Icono de menú",
-            contentScale = ContentScale.Crop
-        )
     }
 }
