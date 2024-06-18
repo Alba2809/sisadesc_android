@@ -40,7 +40,7 @@ class AuthViewModel : ViewModel() {
     }
 
     fun onShowPasswordChanged() {
-        _showPassword.value =!_showPassword.value!!
+        _showPassword.value = !_showPassword.value!!
     }
 
     private fun isValidPassword(password: String): Boolean {
@@ -51,7 +51,12 @@ class AuthViewModel : ViewModel() {
         return Patterns.EMAIL_ADDRESS.matcher(email).matches()
     }
 
-    fun signInWithEmailAndPassword(email: String, password: String, context: Context, next: () -> Unit) =
+    fun signInWithEmailAndPassword(
+        email: String,
+        password: String,
+        context: Context,
+        next: () -> Unit
+    ) =
         viewModelScope.launch {
             try {
                 _loading.value = true

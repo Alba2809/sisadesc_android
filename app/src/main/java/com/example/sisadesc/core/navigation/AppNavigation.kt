@@ -40,6 +40,8 @@ import com.example.sisadesc.ui.home.HomeScreen
 import com.example.sisadesc.ui.home.HomeViewModel
 import com.example.sisadesc.ui.navigation.NavigationHeader
 import com.example.sisadesc.ui.splash.SplashScreen
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 import kotlinx.coroutines.launch
 
 @Composable
@@ -47,6 +49,8 @@ fun AppNavigation() {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
+
+    val auth = Firebase.auth
 
     val homeViewModel = HomeViewModel()
     val userData by homeViewModel.userData.observeAsState(initial = null)
@@ -79,7 +83,7 @@ fun AppNavigation() {
                             label = { Text(text = item.title) },
                             selected = index == selectedItemIndex,
                             onClick = {
-                                if(currentRoute != item.destination) navController.navigate(item.destination)
+                                if (currentRoute != item.destination) navController.navigate(item.destination)
                                 selectedItemIndex = index
                                 scope.launch {
                                     drawerState.close()
@@ -115,7 +119,10 @@ fun AppNavigation() {
                             avatarUrl = userData?.avatarUrl,
                             scope = scope,
                             drawerState = drawerState
-                        )
+                        ) {
+                            auth.signOut()
+                            navController.navigate(AppScreens.AuthScreen.route)
+                        }
                     }
                 },
             ) { innerPadding ->
@@ -137,7 +144,7 @@ fun AppNavigation() {
                     modifier = Modifier.padding(innerPadding)
                 ) {
                     composable(route = AppScreens.SplashScreen.route) {
-                        SplashScreen(navController)
+                        SplashScreen(navController, homeViewModel)
                     }
                     composable(
                         route = AppScreens.AuthScreen.route,
