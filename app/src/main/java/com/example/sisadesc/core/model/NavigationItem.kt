@@ -3,6 +3,7 @@ package com.example.sisadesc.core.model
 import androidx.compose.ui.graphics.vector.ImageVector
 
 data class NavigationItem(
+    val uuid: String,
     val title: String,
     val selectedIcon: ImageVector,
     val unSelectedIcon: ImageVector,

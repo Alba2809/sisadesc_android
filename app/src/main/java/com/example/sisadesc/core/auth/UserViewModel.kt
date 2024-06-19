@@ -1,4 +1,4 @@
-package com.example.sisadesc.ui.home
+package com.example.sisadesc.core.auth
 
 import android.content.ContentValues.TAG
 import android.util.Log
@@ -15,19 +15,23 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObject
 import kotlinx.coroutines.launch
 
-class HomeViewModel() : ViewModel() {
+class UserViewModel() : ViewModel() {
     private val auth: FirebaseAuth = Firebase.auth
 
-    private val _userData = MutableLiveData<UserLogged>()
-    val userData: LiveData<UserLogged> = _userData
+    private val _userData = MutableLiveData<UserLogged?>()
+    val userData: MutableLiveData<UserLogged?> = _userData
+
+    private val _loading = MutableLiveData(false)
+    val loading: LiveData<Boolean> = _loading
 
     init {
         getUserData()
     }
 
-    private fun getUserData() {
+    fun getUserData() {
         viewModelScope.launch {
             try {
+                _loading.value = true
                 val userId = auth.currentUser?.uid
                 FirebaseFirestore.getInstance()
                     .collection("users")
@@ -67,6 +71,8 @@ class HomeViewModel() : ViewModel() {
             } catch (e: Exception) {
                 Log.d(TAG, "Error getting documents: ${e.message}")
                 _userData.value = null
+            } finally {
+                _loading.value = false
             }
         }
 

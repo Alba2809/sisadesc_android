@@ -11,9 +11,10 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavController
+import com.example.sisadesc.core.auth.UserViewModel
 
 @Composable
-fun HomeScreen(navController: NavController, viewModel: HomeViewModel, modifier: Modifier) {
+fun HomeScreen(navController: NavController, viewModel: UserViewModel, modifier: Modifier) {
     val userData by viewModel.userData.observeAsState(initial = null)
 
     Column(
