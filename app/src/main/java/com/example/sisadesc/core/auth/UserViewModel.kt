@@ -18,8 +18,8 @@ import kotlinx.coroutines.launch
 class UserViewModel() : ViewModel() {
     private val auth: FirebaseAuth = Firebase.auth
 
-    private val _userData = MutableLiveData<UserLogged?>()
-    val userData: MutableLiveData<UserLogged?> = _userData
+    private val _userLoggedData = MutableLiveData<UserLogged?>()
+    val userLoggedData: MutableLiveData<UserLogged?> = _userLoggedData
 
     private val _loading = MutableLiveData(false)
     val loading: LiveData<Boolean> = _loading
@@ -28,7 +28,7 @@ class UserViewModel() : ViewModel() {
         getUserData()
     }
 
-    fun getUserData() {
+    private fun getUserData() {
         viewModelScope.launch {
             try {
                 _loading.value = true
@@ -41,24 +41,27 @@ class UserViewModel() : ViewModel() {
                     .addOnSuccessListener { documents ->
                         if (!documents.isEmpty) {
                             val res = documents.documents[0]
-                            val user = res.toObject<UserLogged>()
+                            val userLogged = res.toObject<UserLogged>()
 
                             Log.d(TAG, "DocumentSnapshot data: ${res.data}")
 
-                            val roleRef = user?.role
+                            val roleRef = userLogged?.role
 
                             roleRef?.get()?.addOnSuccessListener { roleDoc ->
                                 if (roleDoc != null) {
                                     val roleData = roleDoc.data
-                                    Log.d(TAG, "Role DocumentSnapshot data: $roleData")
 
-                                    user.roleData = roleDoc.toObject<Role>()
+                                    userLogged.roleData = roleDoc.toObject<Role>()
 
-                                    _userData.value = user
+                                    _userLoggedData.value = userLogged
+                                }
+                                else {
+                                    Log.d(TAG, "Role document is null")
+                                    _userLoggedData.value = userLogged
                                 }
                             }?.addOnFailureListener { exception ->
                                 Log.d(TAG, "Role get failed with ", exception)
-                                _userData.value = null
+                                _userLoggedData.value = userLogged
                             }
                         } else {
                             Log.d(TAG, "No such document")
@@ -66,11 +69,11 @@ class UserViewModel() : ViewModel() {
                     }
                     .addOnFailureListener { exception ->
                         Log.d(TAG, "get failed with ", exception)
-                        _userData.value = null
+                        _userLoggedData.value = null
                     }
             } catch (e: Exception) {
                 Log.d(TAG, "Error getting documents: ${e.message}")
-                _userData.value = null
+                _userLoggedData.value = null
             } finally {
                 _loading.value = false
             }

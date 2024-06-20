@@ -20,15 +20,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.sisadesc.core.auth.UserViewModel
 import com.example.sisadesc.ui.auth.AuthViewModel
 import com.example.sisadesc.ui.auth.LoginScreen
 import com.example.sisadesc.ui.home.HomeScreen
-import com.example.sisadesc.core.auth.UserViewModel
 import com.example.sisadesc.ui.navigation.NavigationDrawerSheet
 import com.example.sisadesc.ui.navigation.NavigationHeader
 import com.example.sisadesc.ui.splash.SplashScreen
 import com.example.sisadesc.ui.user.UserScreen
-import com.example.sisadesc.ui.user.UsersViewModel
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 
@@ -41,9 +40,7 @@ fun AppNavigation() {
     val auth = Firebase.auth
 
     val userViewModel = UserViewModel()
-    val userData by userViewModel.userData.observeAsState(initial = null)
-
-    val usersViewModel = UsersViewModel()
+    val userData by userViewModel.userLoggedData.observeAsState(initial = null)
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -62,48 +59,6 @@ fun AppNavigation() {
                     drawerState = drawerState,
                     currentRoute = currentRoute,
                 )
-//                ModalDrawerSheet {
-//                    Spacer(modifier = Modifier.height(16.dp))
-//                    items.forEach { (main, subroutes) ->
-//                        if(subroutes.size == 1) {
-//                            val item = subroutes[0]
-//                            NavigationDrawerItem(
-//                                label = { Text(text = if (subroutes.size == 1) item.title else main ) },
-//                                selected = item.uuid == selectedItemUUID,
-//                                onClick = {
-//                                    selectedItemUUID = item.uuid
-//                                    if(subroutes.size == 1){
-//                                        selectedSubmenu = true
-//                                    }
-//                                    else {
-//                                        if (currentRoute != item.destination) navController.navigate(item.destination)
-//                                        scope.launch {
-//                                            drawerState.close()
-//                                        }
-//                                    }
-//                                },
-//                                icon = {
-//                                    Icon(
-//                                        imageVector = if (item.uuid == selectedItemUUID) item.selectedIcon else item.unSelectedIcon,
-//                                        contentDescription = "Icon de ${item.title}"
-//                                    )
-//                                },
-//                                badge = {
-//                                    item.badgeCount?.let {
-//                                        Text(text = item.badgeCount.toString())
-//                                    }
-//                                },
-//                                modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
-//                            )
-//                        }
-//                        else {
-//                            val exposed by remember {
-//                                mutableStateOf(false)
-//                            }
-//
-//                        }
-//                    }
-//                }
             },
             drawerState = drawerState
         ) {
@@ -179,7 +134,7 @@ fun AppNavigation() {
                             )
                         },
                     ) {
-                        UserScreen(navController, usersViewModel)
+                        UserScreen(navController)
                     }
                 }
 

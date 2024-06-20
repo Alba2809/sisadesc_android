@@ -2,14 +2,15 @@ package com.example.sisadesc.core.model
 
 import com.google.firebase.firestore.DocumentReference
 
-data class UserLogged(
+//user with all his data (address needs to be added)
+data class UserDetailed(
     val id: String?,
     val userId: String,
     val name: String,
     val avatarUrl: String,
     val role: DocumentReference?,
     var roleData: Role?,
-    val email: String
+    var email: String
 ){
     constructor(): this("", "", "", "", null, null, "")
     fun toMap(): MutableMap<String, Any?> {

@@ -25,7 +25,7 @@ fun SplashScreen(
     navController: NavController,
     viewModel: UserViewModel,
 ) {
-    val userData by viewModel.userData.observeAsState(initial = null)
+    val userData by viewModel.userLoggedData.observeAsState(initial = null)
 
     LaunchedEffect(key1 = true) {
         delay(1500)

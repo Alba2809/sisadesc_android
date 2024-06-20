@@ -15,7 +15,7 @@ import com.example.sisadesc.core.auth.UserViewModel
 
 @Composable
 fun HomeScreen(navController: NavController, viewModel: UserViewModel, modifier: Modifier) {
-    val userData by viewModel.userData.observeAsState(initial = null)
+    val userData by viewModel.userLoggedData.observeAsState(initial = null)
 
     Column(
         modifier = modifier
