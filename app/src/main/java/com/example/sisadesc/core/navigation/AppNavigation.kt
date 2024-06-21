@@ -49,7 +49,6 @@ fun AppNavigation() {
         val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
         val scope = rememberCoroutineScope()
 
-
         ModalNavigationDrawer(
             drawerContent = {
                 NavigationDrawerSheet(
@@ -67,6 +66,7 @@ fun AppNavigation() {
                     if (currentRoute != AppScreens.SplashScreen.route && currentRoute != AppScreens.AuthScreen.route) {
                         val title = when (currentRoute) {
                             AppScreens.HomeScreen.route -> "Home"
+                            AppScreens.UsersScreen.route -> "Users"
                             else -> ""
                         }
                         NavigationHeader(
@@ -86,7 +86,7 @@ fun AppNavigation() {
                     startDestination = AppScreens.SplashScreen.route,
                     enterTransition = {
                         slideInHorizontally(
-                            initialOffsetX = { it },
+                            initialOffsetX = { it / 2 },
                             animationSpec = tween(durationMillis = 1000)
                         )
                     },
@@ -105,7 +105,7 @@ fun AppNavigation() {
                         route = AppScreens.AuthScreen.route,
                         enterTransition = {
                             slideInHorizontally(
-                                initialOffsetX = { it },
+                                initialOffsetX = { it / 2 },
                                 animationSpec = tween(durationMillis = 1000)
                             )
                         }
@@ -116,7 +116,7 @@ fun AppNavigation() {
                         route = AppScreens.HomeScreen.route,
                         enterTransition = {
                             slideInHorizontally(
-                                initialOffsetX = { it },
+                                initialOffsetX = { it / 2 },
                                 animationSpec = tween(durationMillis = 1000)
                             )
                         },
@@ -129,7 +129,7 @@ fun AppNavigation() {
                         route = AppScreens.UsersScreen.route,
                         enterTransition = {
                             slideInHorizontally(
-                                initialOffsetX = { it },
+                                initialOffsetX = { it / 2 },
                                 animationSpec = tween(durationMillis = 1000)
                             )
                         },

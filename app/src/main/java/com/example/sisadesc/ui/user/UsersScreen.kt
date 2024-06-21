@@ -1,54 +1,64 @@
 package com.example.sisadesc.ui.user
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.ScrollableTabRow
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImagePainter
 import coil.compose.SubcomposeAsyncImage
 import coil.compose.SubcomposeAsyncImageContent
 import com.example.sisadesc.core.model.UserDetailed
-import com.example.sisadesc.ui.theme.Directions
-import com.example.sisadesc.ui.theme.bottomBorder
-import com.example.sisadesc.ui.theme.customBorder
+import com.example.sisadesc.ui.theme.loadingAnimation
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Composable
 fun UserScreen(
@@ -58,181 +68,281 @@ fun UserScreen(
     val users by viewModel!!.users.observeAsState(initial = emptyList())
     val isLoading: Boolean by viewModel!!.loading.observeAsState(initial = false)
 
-    Column(
+    val sheetState = rememberModalBottomSheetState(false)
+    var isSheetShow by remember {
+        mutableStateOf(false)
+    }
+    var userSelected: UserDetailed? by remember {
+        mutableStateOf(null)
+    }
+
+    Box(
         modifier = Modifier
             .background(Color.White)
-            .fillMaxSize()
-            .padding(10.dp),
+            .fillMaxSize(),
     ) {
         if (!isLoading) {
-            Row(modifier = Modifier.horizontalScroll(rememberScrollState())) {
-                TableScreen(users = users)
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                items(users) { user ->
+                    UserCard(user, onClickDetails = {
+                        isSheetShow = true
+                        userSelected = user
+                    })
+                }
             }
         } else {
             CircularProgressIndicator()
         }
     }
-}
 
-sealed class Columns(val title: String, val minWidth: Dp, val maxWidth: Dp? = minWidth) {
-    object AvatarColumn : Columns("Avatar", 80.dp)
-    object NameColumn : Columns("Nombre", 100.dp)
-    object EmailColumn : Columns("Correo", 200.dp)
-    object RoleColumn : Columns("Rol", 180.dp)
-}
-
-@Composable
-fun TableScreen(users: List<UserDetailed>) {
-    LazyColumn(
-        Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        // Here is the header
-        item {
-            Row {
-                TableHeader(
-                    text = "",
-                    minWidth = Columns.AvatarColumn.minWidth,
-                    modifier = Modifier.customBorder(
-                        1.dp,
-                        Color.LightGray,
-                        listOf(Directions.TOP, Directions.BOTTOM)
-                    )
-                )
-                TableHeader(
-                    text = "Nombre",
-                    minWidth = Columns.NameColumn.minWidth,
-                    modifier = Modifier.customBorder(
-                        1.dp,
-                        Color.LightGray,
-                        listOf(Directions.TOP, Directions.BOTTOM)
-                    )
-                )
-                TableHeader(
-                    text = "Correo",
-                    minWidth = Columns.EmailColumn.minWidth,
-                    modifier = Modifier.customBorder(
-                        1.dp,
-                        Color.LightGray,
-                        listOf(Directions.TOP, Directions.BOTTOM)
-                    )
-                )
-                TableHeader(
-                    text = "Rol",
-                    minWidth = Columns.RoleColumn.minWidth,
-                    modifier = Modifier.customBorder(
-                        1.dp,
-                        Color.LightGray,
-                        listOf(Directions.TOP, Directions.BOTTOM)
-                    )
-                )
-            }
-        }
-        // Here are all the lines of your table.
-        items(users) { user ->
-            Row(
-                modifier = Modifier
-                    .heightIn(max = 50.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
-            ) {
-                TableCellImage(
-                    imageUrl = user.avatarUrl,
-                    minWidth = Columns.AvatarColumn.minWidth,
-                    modifier = Modifier.bottomBorder(1.dp, Color.LightGray)
-                )
-                TableCellText(
-                    text = user.name,
-                    minWidth = Columns.NameColumn.minWidth,
-                    modifier = Modifier.bottomBorder(1.dp, Color.LightGray)
-                )
-                TableCellText(
-                    text = user.email,
-                    minWidth = Columns.EmailColumn.minWidth,
-                    modifier = Modifier.bottomBorder(1.dp, Color.LightGray)
-                )
-                TableCellText(
-                    text = user.roleData?.displayName ?: "",
-                    minWidth = Columns.RoleColumn.minWidth,
-                    modifier = Modifier.bottomBorder(1.dp, Color.LightGray)
-                )
+    if (isSheetShow && userSelected != null) {
+        ModalBottomSheet(
+            sheetState = sheetState,
+            onDismissRequest = { isSheetShow = false }
+        ) {
+            BottomSheetContent(userSelected!!) {
+                isSheetShow = false
+                userSelected = null
             }
         }
     }
 }
 
 @Composable
-fun RowScope.TableHeader(
-    text: String,
-    minWidth: Dp,
-    maxWidth: Dp? = minWidth,
-    modifier: Modifier
-) {
-    Text(
-        text = text,
-        modifier
-            .widthIn(minWidth, maxWidth!!)
-            .fillMaxHeight()
-            .padding(8.dp),
-        fontWeight = FontWeight.SemiBold
-    )
+fun UserCard(user: UserDetailed, onClickDetails: () -> Unit) {
+    Surface(
+        modifier = Modifier
+            .widthIn(max = 250.dp)
+            .padding(5.dp),
+        shadowElevation = 2.dp,
+        border = BorderStroke(1.dp, Color.LightGray),
+        shape = RoundedCornerShape(10.dp),
+        color = Color.White
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 10.dp, start = 5.dp, end = 5.dp, bottom = 5.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            CardHeader(user.avatarUrl, onClickDetails)
+            Spacer(modifier = Modifier.height(5.dp))
+            CardBody(
+                role = user.roleData?.displayName ?: "",
+                name = user.name,
+                email = user.email
+            )
+        }
+    }
 }
 
 @Composable
-fun RowScope.TableCellText(
-    modifier: Modifier? = Modifier,
-    text: String,
-    minWidth: Dp,
-    maxWidth: Dp? = minWidth
-) {
+fun CardHeader(imageUrl: String, onClickDetails: () -> Unit) {
+    var expanded by remember {
+        mutableStateOf(false)
+    }
+    var isLoadingCompleted by remember {
+        mutableStateOf(false)
+    }
+
     Box(
-        modifier = modifier!!
-            .fillMaxHeight(1f)
-            .widthIn(minWidth, maxWidth!!),
-        contentAlignment = Alignment.CenterStart
+        modifier = Modifier.fillMaxWidth(),
+        contentAlignment = Alignment.Center
+    ) {
+        Surface(
+            modifier = Modifier
+                .size(70.dp)
+                .clip(CircleShape)
+        ) {
+            SubcomposeAsyncImage(
+                model = imageUrl,
+                contentDescription = "Avatar del usuario",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .background(color = Color.LightGray, shape = CircleShape)
+                    .loadingAnimation(isLoadingCompleted)
+            ) {
+                val state = painter.state
+                if (state !is AsyncImagePainter.State.Loading && state !is AsyncImagePainter.State.Error) {
+                    isLoadingCompleted = true
+                    SubcomposeAsyncImageContent()
+                }
+            }
+        }
+
+        Column(modifier = Modifier.align(Alignment.TopEnd)) {
+            IconButton(
+                onClick = { expanded = !expanded },
+                modifier = Modifier
+                    .size(30.dp)
+                    .offset(y = (-3).dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.MoreVert,
+                    contentDescription = "Icono de ver más",
+                    tint = Color.Gray
+                )
+
+            }
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false },
+                modifier = Modifier
+                    .background(Color.White)
+                    .padding(top = 0.dp, bottom = 0.dp)
+            ) {
+                DropdownMenuItem(
+                    text = {
+                        Text(text = "Ver detalles")
+                    },
+                    onClick = {
+                        expanded = false
+                        onClickDetails()
+                    }
+                )
+                Divider()
+                DropdownMenuItem(
+                    text = {
+                        Text(text = "Editar")
+                    },
+                    onClick = {
+                        expanded = false
+                    }
+                )
+                Divider()
+                DropdownMenuItem(
+                    text = {
+                        Text(
+                            text = "Eliminar",
+                            color = Color.Red
+                        )
+                    },
+                    onClick = {
+                        expanded = false
+                    }
+                )
+            }
+        }
+    }
+
+}
+
+@Composable
+fun CardBody(role: String, name: String, email: String) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(10.dp)
     ) {
         Text(
-            text = text,
-            Modifier
-                .padding(8.dp)
+            text = role,
+            fontWeight = FontWeight.SemiBold,
+            fontSize = 16.sp,
+            modifier = Modifier
+                .fillMaxWidth()
                 .horizontalScroll(rememberScrollState()),
-            maxLines = 1,
+            maxLines = 1
+        )
+        Spacer(modifier = Modifier.height(2.dp))
+        Text(
+            text = name,
+            fontWeight = FontWeight.SemiBold,
+            fontSize = 18.sp,
+            modifier = Modifier
+                .fillMaxWidth()
+                .horizontalScroll(rememberScrollState()),
+            maxLines = 1
+        )
+        Spacer(modifier = Modifier.height(3.dp))
+        Text(
+            text = email,
+            fontWeight = FontWeight.Medium,
+            fontSize = 14.sp,
+            color = Color(0xFF828282),
+            modifier = Modifier
+                .fillMaxWidth()
+                .horizontalScroll(rememberScrollState()),
+            maxLines = 1
         )
     }
 }
 
 @Composable
-fun RowScope.TableCellImage(
-    modifier: Modifier? = Modifier,
-    imageUrl: String,
-    minWidth: Dp,
-    maxWidth: Dp? = minWidth,
-) {
-    Box(
-        modifier = modifier!!
-            .widthIn(minWidth, maxWidth!!)
-            .fillMaxHeight(1f)
-            .padding(2.dp),
-        contentAlignment = Alignment.Center
+fun BottomSheetContent(user: UserDetailed, onHideSheetButton: () -> Unit) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(10.dp)
     ) {
-        Surface(
-            modifier = Modifier
-                .size(40.dp)
-                .clip(CircleShape)
-        ) {
-            SubcomposeAsyncImage(
-                model = imageUrl,
-                contentDescription = "Imagen del usuario",
-                contentScale = ContentScale.Crop,
-            ) {
-                val state = painter.state
-                if (state is AsyncImagePainter.State.Loading || state is AsyncImagePainter.State.Error) {
-                    CircularProgressIndicator(modifier = Modifier.padding(5.dp))
-                } else {
-                    SubcomposeAsyncImageContent()
-                }
-            }
+        Row {
+            Text(
+                text = "Nombre:",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.SemiBold
+            )
+            Spacer(modifier = Modifier.width(5.dp))
+            Text(
+                text = user.name,
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Medium,
+                maxLines = 1,
+                modifier = Modifier.horizontalScroll(rememberScrollState())
+            )
         }
+        Spacer(modifier = Modifier.height(10.dp))
+        Row {
+            Text(
+                text = "E-mail:",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.SemiBold
+            )
+            Spacer(modifier = Modifier.width(5.dp))
+            Text(
+                text = user.email,
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Medium,
+                maxLines = 1,
+                modifier = Modifier.horizontalScroll(rememberScrollState())
+            )
+        }
+        Spacer(modifier = Modifier.height(10.dp))
+        Row {
+            Text(
+                text = "Nombre:",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.SemiBold
+            )
+            Spacer(modifier = Modifier.width(5.dp))
+            Text(
+                text = user.roleData?.displayName ?: "",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Medium,
+                maxLines = 1,
+                modifier = Modifier.horizontalScroll(rememberScrollState())
+            )
+        }
+        Spacer(modifier = Modifier.height(10.dp))
+        Button(
+            onClick = { onHideSheetButton() },
+            modifier = Modifier
+                .fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color.Black,
+            ),
+            shape = RoundedCornerShape(10.dp)
+        ) {
+            Text(
+                text = "Cerrar",
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Medium,
+                fontSize = 15.sp,
+                color = Color.White
+            )
+        }
+        Spacer(modifier = Modifier.height(10.dp))
     }
 }

@@ -1,5 +1,6 @@
 package com.example.sisadesc.ui.navigation
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -34,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImagePainter
 import coil.compose.SubcomposeAsyncImage
 import coil.compose.SubcomposeAsyncImageContent
+import com.example.sisadesc.ui.theme.loadingAnimation
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -107,6 +109,10 @@ fun NavigationHeader(
 
 @Composable
 fun AvatarUser(avatarUrl: String) {
+    var isLoadingCompleted by remember {
+        mutableStateOf(false)
+    }
+
     Surface(
         modifier = Modifier
             .size(50.dp)
@@ -116,11 +122,13 @@ fun AvatarUser(avatarUrl: String) {
             model = avatarUrl,
             contentDescription = "Imagen del usuario",
             contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .background(color = Color.LightGray, shape = CircleShape)
+                .loadingAnimation(isLoadingCompleted)
         ) {
             val state = painter.state
-            if (state is AsyncImagePainter.State.Loading || state is AsyncImagePainter.State.Error) {
-                CircularProgressIndicator(modifier = Modifier.padding(5.dp))
-            } else {
+            if (state !is AsyncImagePainter.State.Loading && state !is AsyncImagePainter.State.Error) {
+                isLoadingCompleted = true
                 SubcomposeAsyncImageContent()
             }
         }
