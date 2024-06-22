@@ -7,10 +7,8 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.ui.graphics.vector.ImageVector
 import com.example.sisadesc.core.model.NavigationItem
 import com.example.sisadesc.core.model.NavigationMenu
-import java.util.UUID
 
 sealed class ScreensByRole(val routes: List<NavigationMenu>) {
     data object Admin :

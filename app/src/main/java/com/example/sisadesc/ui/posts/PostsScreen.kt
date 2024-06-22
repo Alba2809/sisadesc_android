@@ -99,9 +99,8 @@ fun PostsScreen(
                     Spacer(modifier = Modifier.height(10.dp))
                 }
             }
-        } else {
-            LoadingAnimation(isLoadingCompleted = !isLoading)
         }
+        else LoadingAnimation(isLoadingCompleted = false)
     }
 }
 
@@ -285,13 +284,13 @@ fun CardBody(title: String, description: String, date: Timestamp?) {
             text = description.repeat(5),
             fontWeight = FontWeight.Medium,
             fontSize = 14.sp,
-            maxLines = if(isExpanded) Integer.MAX_VALUE else 2,
+            maxLines = if (isExpanded) Integer.MAX_VALUE else 2,
             overflow = TextOverflow.Ellipsis,
             onTextLayout = { textLayoutResult = it },
             modifier = Modifier.animateContentSize()
         )
     }
-    if(isButtonShown){
+    if (isButtonShown) {
         IconButton(onClick = { isExpanded = !isExpanded }) {
             Icon(
                 imageVector = if (isExpanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
@@ -299,8 +298,7 @@ fun CardBody(title: String, description: String, date: Timestamp?) {
                 modifier = Modifier.size(20.dp)
             )
         }
-    }
-    else{
+    } else {
         Spacer(modifier = Modifier.height(10.dp))
     }
 }
@@ -309,9 +307,17 @@ fun CardBody(title: String, description: String, date: Timestamp?) {
 fun LoadingAnimation(isLoadingCompleted: Boolean) {
     Box(
         modifier = Modifier
-            .width(250.dp)
-            .height(350.dp)
-            .background(Color.LightGray)
-            .loadingAnimation(isLoadingCompleted)
-    ) {}
+            .width(350.dp)
+            .height(250.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.LightGray, RoundedCornerShape(10.dp))
+                .loadingAnimation(isLoadingCompleted),
+        ) {
+
+        }
+    }
 }

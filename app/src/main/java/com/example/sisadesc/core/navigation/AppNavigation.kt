@@ -22,7 +22,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.sisadesc.core.auth.UserViewModel
-import com.example.sisadesc.core.model.Post
 import com.example.sisadesc.ui.auth.AuthViewModel
 import com.example.sisadesc.ui.auth.LoginScreen
 import com.example.sisadesc.ui.home.HomeScreen
