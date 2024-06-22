@@ -138,15 +138,6 @@ fun NavigationDrawerSheet(
                     Spacer(modifier = Modifier.height(16.dp))
                     items.forEach { item ->
                         val firstItem = item.routes[0]
-                        println("selectedMenuUUID: $selectedMenuUUID")
-                        println("selectedSubmenuUUID: $selectedSubmenuUUID")
-                        println("item.uuid: ${item.uuid}-")
-                        println("contains item.uuid: ${selectedSubmenuUUID.contains(
-                            item.uuid
-                        )}")
-                        println("contains item.uuid-: ${selectedSubmenuUUID.contains(
-                            "${item.uuid}-"
-                        )}")
                         NavigationDrawerItem(
                             label = { Text(text = item.mainTitle) },
                             selected = item.uuid == selectedMenuUUID || selectedSubmenuUUID.contains(

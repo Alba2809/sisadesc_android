@@ -7,16 +7,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sisadesc.core.model.Role
 import com.example.sisadesc.core.model.UserDetailed
-import com.google.firebase.Firebase
-import com.google.firebase.auth.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObject
 import com.google.firebase.firestore.toObjects
 import kotlinx.coroutines.launch
 
 class UsersViewModel : ViewModel() {
-    private val auth = Firebase.auth
-
     private val _users = MutableLiveData<List<UserDetailed>>()
     val users: MutableLiveData<List<UserDetailed>> = _users
 

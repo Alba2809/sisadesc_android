@@ -1,5 +1,6 @@
 package com.example.sisadesc.ui.user
 
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
@@ -37,6 +38,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -47,6 +49,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -149,6 +152,16 @@ fun CardHeader(imageUrl: String, onClickDetails: () -> Unit) {
         mutableStateOf(false)
     }
 
+    val context = LocalContext.current
+    var showToast by remember { mutableStateOf(false) }
+
+    if (showToast) {
+        LaunchedEffect(Unit) {
+            Toast.makeText(context, "Falta por implementar :D", Toast.LENGTH_SHORT).show()
+            showToast = false
+        }
+    }
+
     Box(
         modifier = Modifier.fillMaxWidth(),
         contentAlignment = Alignment.Center
@@ -211,6 +224,7 @@ fun CardHeader(imageUrl: String, onClickDetails: () -> Unit) {
                     },
                     onClick = {
                         expanded = false
+                        showToast = true
                     }
                 )
                 Divider()
@@ -223,6 +237,7 @@ fun CardHeader(imageUrl: String, onClickDetails: () -> Unit) {
                     },
                     onClick = {
                         expanded = false
+                        showToast = true
                     }
                 )
             }

@@ -3,6 +3,7 @@ package com.example.sisadesc.core.navigation
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.DrawerValue
@@ -21,11 +22,13 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.sisadesc.core.auth.UserViewModel
+import com.example.sisadesc.core.model.Post
 import com.example.sisadesc.ui.auth.AuthViewModel
 import com.example.sisadesc.ui.auth.LoginScreen
 import com.example.sisadesc.ui.home.HomeScreen
 import com.example.sisadesc.ui.navigation.NavigationDrawerSheet
 import com.example.sisadesc.ui.navigation.NavigationHeader
+import com.example.sisadesc.ui.posts.PostsScreen
 import com.example.sisadesc.ui.splash.SplashScreen
 import com.example.sisadesc.ui.user.UserScreen
 import com.google.firebase.Firebase
@@ -43,7 +46,7 @@ fun AppNavigation() {
     val userData by userViewModel.userLoggedData.observeAsState(initial = null)
 
     Surface(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize().background(Color.White),
         color = Color.White
     ) {
         val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -66,7 +69,8 @@ fun AppNavigation() {
                     if (currentRoute != AppScreens.SplashScreen.route && currentRoute != AppScreens.AuthScreen.route) {
                         val title = when (currentRoute) {
                             AppScreens.HomeScreen.route -> "Home"
-                            AppScreens.UsersScreen.route -> "Users"
+                            AppScreens.UsersScreen.route -> "Usuarios"
+                            AppScreens.PostsScreen.route -> "Avisos"
                             else -> ""
                         }
                         NavigationHeader(
@@ -80,6 +84,7 @@ fun AppNavigation() {
                         }
                     }
                 },
+                modifier = Modifier.background(Color.White)
             ) { innerPadding ->
                 NavHost(
                     navController = navController,
@@ -96,7 +101,7 @@ fun AppNavigation() {
                             animationSpec = tween(durationMillis = 1000)
                         )
                     },
-                    modifier = Modifier.padding(innerPadding)
+                    modifier = Modifier.padding(innerPadding).background(Color.White)
                 ) {
                     composable(route = AppScreens.SplashScreen.route) {
                         SplashScreen(navController, userViewModel)
@@ -136,11 +141,20 @@ fun AppNavigation() {
                     ) {
                         UserScreen(navController)
                     }
+                    composable(
+                        route = AppScreens.PostsScreen.route,
+                        enterTransition = {
+                            slideInHorizontally(
+                                initialOffsetX = { it / 2 },
+                                animationSpec = tween(durationMillis = 1000)
+                            )
+                        },
+                    ) {
+                        PostsScreen(navController, userLogged = userData)
+                    }
                 }
 
             }
         }
     }
-
-
 }

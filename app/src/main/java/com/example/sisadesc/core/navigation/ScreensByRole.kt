@@ -2,7 +2,10 @@ package com.example.sisadesc.core.navigation
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBox
+import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.example.sisadesc.core.model.NavigationItem
@@ -45,6 +48,27 @@ sealed class ScreensByRole(val routes: List<NavigationMenu>) {
                             selectedIcon = Icons.Default.Person,
                             unSelectedIcon = Icons.Default.Person,
                             destination = AppScreens.UsersScreen.route
+                        )
+                    )
+                ),
+                NavigationMenu(
+                    uuid = "posts",
+                    mainTitle = "Avisos",
+                    mainIcon = Icons.Default.Notifications,
+                    routes = listOf(
+                        NavigationItem(
+                            uuid = "posts-1",
+                            title = "Lista de avisos",
+                            selectedIcon = Icons.Default.List,
+                            unSelectedIcon = Icons.Default.List,
+                            destination = AppScreens.PostsScreen.route
+                        ),
+                        NavigationItem(
+                            uuid = "posts-2",
+                            title = "Registrar aviso",
+                            selectedIcon = Icons.Default.Create,
+                            unSelectedIcon = Icons.Default.Create,
+                            destination = AppScreens.CreatePostScreen.route
                         )
                     )
                 ),
