@@ -34,6 +34,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -67,7 +68,7 @@ fun LoginScreen(
     ) {
         Column(
             modifier = Modifier
-                .border(1.dp, color = ContainerBorder, RoundedCornerShape(8.dp))
+                .border(1.dp, Color.Gray, RoundedCornerShape(8.dp))
                 .padding(15.dp)
         ) {
             HeaderScreen()
@@ -87,7 +88,8 @@ fun HeaderScreen() {
             textAlign = TextAlign.Center,
             fontSize = 24.sp,
             fontWeight = FontWeight.SemiBold,
-            fontFamily = FontFamily.Serif
+            fontFamily = FontFamily.Serif,
+            color = Color.Black
         )
         Spacer(modifier = Modifier.height(20.dp))
     }
@@ -142,7 +144,8 @@ fun HeaderLogin() {
         modifier = Modifier.fillMaxWidth(),
         textAlign = TextAlign.Center,
         fontSize = 18.sp,
-        fontWeight = FontWeight.SemiBold
+        fontWeight = FontWeight.SemiBold,
+        color = Color.Black
     )
     Spacer(modifier = Modifier.height(5.dp))
     Text(
@@ -150,7 +153,8 @@ fun HeaderLogin() {
         modifier = Modifier.fillMaxWidth(),
         textAlign = TextAlign.Center,
         fontSize = 14.sp,
-        fontWeight = FontWeight.Normal
+        fontWeight = FontWeight.Normal,
+        color = Color.Black
     )
 }
 
@@ -169,10 +173,13 @@ fun EmailField(email: String, isLoading: Boolean, onTextFiledChange: (String) ->
         colors = OutlinedTextFieldDefaults.colors(
             focusedContainerColor = Color.Transparent,
             unfocusedContainerColor = Color.Transparent,
-            unfocusedPlaceholderColor = Color.LightGray,
-            focusedPlaceholderColor = Color.LightGray,
-            unfocusedBorderColor = Color.LightGray,
+            unfocusedPlaceholderColor = Color.Gray,
+            focusedPlaceholderColor = Color.Gray,
+            unfocusedBorderColor = Color.Gray,
             focusedBorderColor = Color.Black,
+            focusedTextColor = Color.Black,
+            unfocusedTextColor = Color.Black,
+            cursorColor = Color.Black
         ),
         shape = RoundedCornerShape(10.dp),
         keyboardOptions = KeyboardOptions(
@@ -214,10 +221,13 @@ fun PasswordField(
         colors = OutlinedTextFieldDefaults.colors(
             focusedContainerColor = Color.Transparent,
             unfocusedContainerColor = Color.Transparent,
-            unfocusedPlaceholderColor = Color.LightGray,
-            focusedPlaceholderColor = Color.LightGray,
-            unfocusedBorderColor = Color.LightGray,
+            unfocusedPlaceholderColor = Color.Gray,
+            focusedPlaceholderColor = Color.Gray,
+            unfocusedBorderColor = Color.Gray,
             focusedBorderColor = Color.Black,
+            focusedTextColor = Color.Black,
+            unfocusedTextColor = Color.Black,
+            cursorColor = Color.Black
         ),
         shape = RoundedCornerShape(10.dp),
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
@@ -248,7 +258,9 @@ fun LoginButton(loginEnable: Boolean, isLoading: Boolean, onLoginSelected: () ->
             .fillMaxWidth(),
         enabled = loginEnable && !isLoading,
         colors = ButtonDefaults.buttonColors(
-            containerColor = Color.Black
+            containerColor = Color.Black,
+            disabledContentColor = Color.Gray,
+            disabledContainerColor = Color.Gray
         ),
         shape = RoundedCornerShape(10.dp)
     ) {

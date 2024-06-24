@@ -5,14 +5,12 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.KeyboardArrowRight
-import androidx.compose.material3.DrawerDefaults
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -27,11 +25,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.sisadesc.core.auth.UserViewModel
 import com.example.sisadesc.core.model.NavigationMenu
 import com.example.sisadesc.core.navigation.ScreensByRole
-import com.example.sisadesc.core.auth.UserViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -68,7 +67,7 @@ fun NavigationDrawerSheet(
         targetState = showSubMenu,
         label = "Animated menu",
         transitionSpec = {
-            if(!this.targetState) {
+            if (!this.targetState) {
                 slideInHorizontally(
                     animationSpec = tween(500),
                     initialOffsetX = { it }
@@ -76,8 +75,7 @@ fun NavigationDrawerSheet(
                     animationSpec = tween(500),
                     targetAlpha = 0f
                 )
-            }
-            else {
+            } else {
                 slideInHorizontally(
                     animationSpec = tween(500),
                     initialOffsetX = { it }
@@ -87,27 +85,38 @@ fun NavigationDrawerSheet(
                 )
             }
         },
-        modifier = Modifier.background(DrawerDefaults.containerColor)
     ) { targetState ->
         when (targetState) {
             true -> {
                 val subMenuItems = items.find {
                     it.uuid == selectedMenuUUID
                 }
-                ModalDrawerSheet {
+                ModalDrawerSheet(
+//                    drawerContentColor = Color.White,
+//                    drawerContainerColor = Color.White
+                ) {
                     Spacer(modifier = Modifier.height(16.dp))
                     IconButton(onClick = {
                         showSubMenu = false
                     }) {
                         Icon(
                             imageVector = Icons.Default.KeyboardArrowLeft,
-                            contentDescription = "Icon de regresar"
+                            contentDescription = "Icon de regresar",
+                            tint = Color.DarkGray
                         )
                     }
                     subMenuItems?.routes?.forEach { item ->
                         NavigationDrawerItem(
-                            label = { Text(text = item.title) },
+                            label = { Text(text = item.title, color = Color.Black) },
                             selected = item.uuid == selectedSubmenuUUID,
+//                            colors = NavigationDrawerItemDefaults.colors(
+//                                selectedIconColor = Color.DarkGray,
+//                                unselectedIconColor = Color.Gray,
+//                                unselectedTextColor = Color.DarkGray,
+//                                selectedTextColor = Color.Black,
+//                                selectedContainerColor = Color.LightGray,
+//                                unselectedContainerColor = Color.Transparent
+//                            ),
                             onClick = {
                                 selectedSubmenuUUID = item.uuid
                                 //showSubMenu = false
@@ -119,12 +128,13 @@ fun NavigationDrawerSheet(
                             icon = {
                                 Icon(
                                     imageVector = item.unSelectedIcon,
-                                    contentDescription = "Icon de ${item.title}"
+                                    contentDescription = "Icon de ${item.title}",
+                                    tint = Color.DarkGray
                                 )
                             },
                             badge = {
                                 item.badgeCount?.let {
-                                    Text(text = item.badgeCount.toString())
+                                    Text(text = item.badgeCount.toString(), color = Color.Black)
                                 }
                             },
                             modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
@@ -134,15 +144,26 @@ fun NavigationDrawerSheet(
             }
 
             false -> {
-                ModalDrawerSheet {
+                ModalDrawerSheet(
+//                    drawerContentColor = Color.White,
+//                    drawerContainerColor = Color.White
+                ) {
                     Spacer(modifier = Modifier.height(16.dp))
                     items.forEach { item ->
                         val firstItem = item.routes[0]
                         NavigationDrawerItem(
-                            label = { Text(text = item.mainTitle) },
+                            label = { Text(text = item.mainTitle, color = Color.Black) },
                             selected = item.uuid == selectedMenuUUID || selectedSubmenuUUID.contains(
                                 item.uuid
                             ),
+//                            colors = NavigationDrawerItemDefaults.colors(
+//                                selectedIconColor = Color.DarkGray,
+//                                unselectedIconColor = Color.Gray,
+//                                unselectedTextColor = Color.DarkGray,
+//                                selectedTextColor = Color.Black,
+//                                selectedContainerColor = Color.LightGray,
+//                                unselectedContainerColor = Color.Transparent
+//                            ),
                             onClick = {
                                 selectedMenuUUID = item.uuid
                                 if (item.routes.size == 1) {
@@ -160,18 +181,23 @@ fun NavigationDrawerSheet(
                             icon = {
                                 Icon(
                                     imageVector = item.mainIcon,
-                                    contentDescription = "Icon de ${item.mainTitle}"
+                                    contentDescription = "Icon de ${item.mainTitle}",
+                                    tint = Color.DarkGray
                                 )
                             },
                             badge = {
                                 if (item.routes.size == 1) {
                                     firstItem.badgeCount?.let {
-                                        Text(text = firstItem.badgeCount.toString())
+                                        Text(
+                                            text = firstItem.badgeCount.toString(),
+                                            color = Color.Black
+                                        )
                                     }
                                 } else {
                                     Icon(
                                         imageVector = Icons.Default.KeyboardArrowRight,
-                                        contentDescription = "Icono de submenu"
+                                        contentDescription = "Icono de submenu",
+                                        tint = Color.DarkGray
                                     )
                                 }
                             },

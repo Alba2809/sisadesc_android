@@ -99,8 +99,7 @@ fun PostsScreen(
                     Spacer(modifier = Modifier.height(10.dp))
                 }
             }
-        }
-        else LoadingAnimation(isLoadingCompleted = false)
+        } else LoadingAnimation(isLoadingCompleted = false)
     }
 }
 
@@ -160,21 +159,28 @@ fun CardHeader(userLogged: UserLogged?, onClickEdit: () -> Unit, onClickDelete: 
                     .size(50.dp)
                     .clip(
                         CircleShape
-                    )
+                    ),
+                tint = Color.DarkGray
             )
 
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 10.dp)
+                    .padding(start = 10.dp, end = 5.dp)
             ) {
-                Text(text = "PUBLICACIÓN DEL COLEGIO", fontSize = 10.sp)
+                Text(text = "PUBLICACIÓN DEL COLEGIO", fontSize = 10.sp, color = Color.Black)
                 Text(
                     text = "ESCUELA SECUNDARIA TÉCNICA",
                     fontSize = 13.sp,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Black
                 )
-                Text(text = "NIVEL SECUNDARIA", fontSize = 10.sp, fontFamily = FontFamily.Serif)
+                Text(
+                    text = "NIVEL SECUNDARIA",
+                    fontSize = 10.sp,
+                    fontFamily = FontFamily.Serif,
+                    color = Color.Black
+                )
             }
         }
         if (userLogged?.roleData?.name == Roles.Admin.name) {
@@ -183,7 +189,7 @@ fun CardHeader(userLogged: UserLogged?, onClickEdit: () -> Unit, onClickDelete: 
                     onClick = { expanded = !expanded },
                     modifier = Modifier
                         .size(30.dp)
-                        .offset(y = (-3).dp)
+                        .offset(y = (-8).dp, x = (8).dp)
                 ) {
                     Icon(
                         imageVector = Icons.Default.MoreVert,
@@ -201,7 +207,7 @@ fun CardHeader(userLogged: UserLogged?, onClickEdit: () -> Unit, onClickDelete: 
                 ) {
                     DropdownMenuItem(
                         text = {
-                            Text(text = "Editar")
+                            Text(text = "Editar", color = Color.Black)
                         },
                         onClick = {
                             expanded = false
@@ -231,7 +237,7 @@ fun CardHeader(userLogged: UserLogged?, onClickEdit: () -> Unit, onClickDelete: 
                             Icon(
                                 imageVector = Icons.Default.Delete,
                                 contentDescription = "Icono de eliminar",
-                                tint = Color.DarkGray
+                                tint = Color.Red
                             )
                         }
                     )
@@ -267,7 +273,8 @@ fun CardBody(title: String, description: String, date: Timestamp?) {
             modifier = Modifier
                 .fillMaxWidth()
                 .horizontalScroll(rememberScrollState()),
-            maxLines = 2
+            maxLines = 2,
+            color = Color.Black
         )
         Spacer(modifier = Modifier.height(2.dp))
         Text(
@@ -277,7 +284,8 @@ fun CardBody(title: String, description: String, date: Timestamp?) {
             modifier = Modifier
                 .fillMaxWidth()
                 .horizontalScroll(rememberScrollState()),
-            maxLines = 1
+            maxLines = 1,
+            color = Color.Black
         )
         Spacer(modifier = Modifier.height(3.dp))
         Text(
@@ -287,7 +295,8 @@ fun CardBody(title: String, description: String, date: Timestamp?) {
             maxLines = if (isExpanded) Integer.MAX_VALUE else 2,
             overflow = TextOverflow.Ellipsis,
             onTextLayout = { textLayoutResult = it },
-            modifier = Modifier.animateContentSize()
+            modifier = Modifier.animateContentSize(),
+            color = Color.Black
         )
     }
     if (isButtonShown) {
@@ -295,7 +304,8 @@ fun CardBody(title: String, description: String, date: Timestamp?) {
             Icon(
                 imageVector = if (isExpanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
                 contentDescription = "Icono de expandir",
-                modifier = Modifier.size(20.dp)
+                modifier = Modifier.size(20.dp),
+                tint = Color.DarkGray
             )
         }
     } else {

@@ -49,6 +49,6 @@ fun SplashContent() {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(text = "Cargando...")
+        Text(text = "Cargando...", color = Color.Black)
     }
 }

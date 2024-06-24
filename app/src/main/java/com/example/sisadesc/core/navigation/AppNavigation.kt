@@ -45,8 +45,7 @@ fun AppNavigation() {
     val userData by userViewModel.userLoggedData.observeAsState(initial = null)
 
     Surface(
-        modifier = Modifier.fillMaxSize().background(Color.White),
-        color = Color.White
+        modifier = Modifier.fillMaxSize(),
     ) {
         val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
         val scope = rememberCoroutineScope()
@@ -61,7 +60,8 @@ fun AppNavigation() {
                     currentRoute = currentRoute,
                 )
             },
-            drawerState = drawerState
+            drawerState = drawerState,
+            modifier = Modifier.background(Color.White)
         ) {
             Scaffold(
                 topBar = {

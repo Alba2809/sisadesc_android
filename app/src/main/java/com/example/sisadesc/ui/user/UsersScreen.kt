@@ -22,6 +22,9 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -206,25 +209,38 @@ fun CardHeader(imageUrl: String, onClickDetails: () -> Unit) {
                 onDismissRequest = { expanded = false },
                 modifier = Modifier
                     .background(Color.White)
-                    .padding(top = 0.dp, bottom = 0.dp)
             ) {
                 DropdownMenuItem(
                     text = {
-                        Text(text = "Ver detalles")
+                        Text(text = "Ver detalles", color = Color.Black)
                     },
                     onClick = {
                         expanded = false
                         onClickDetails()
+                    },
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Default.List,
+                            contentDescription = "Icono detalles",
+                            tint = Color.DarkGray
+                        )
                     }
                 )
                 Divider()
                 DropdownMenuItem(
                     text = {
-                        Text(text = "Editar")
+                        Text(text = "Editar", color = Color.Black)
                     },
                     onClick = {
                         expanded = false
                         showToast = true
+                    },
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Default.Edit,
+                            contentDescription = "Icono editar",
+                            tint = Color.DarkGray
+                        )
                     }
                 )
                 Divider()
@@ -238,6 +254,13 @@ fun CardHeader(imageUrl: String, onClickDetails: () -> Unit) {
                     onClick = {
                         expanded = false
                         showToast = true
+                    },
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = "Icono eliminar",
+                            tint = Color.Red
+                        )
                     }
                 )
             }
@@ -260,7 +283,8 @@ fun CardBody(role: String, name: String, email: String) {
             modifier = Modifier
                 .fillMaxWidth()
                 .horizontalScroll(rememberScrollState()),
-            maxLines = 1
+            maxLines = 1,
+            color = Color.Black
         )
         Spacer(modifier = Modifier.height(2.dp))
         Text(
@@ -270,7 +294,8 @@ fun CardBody(role: String, name: String, email: String) {
             modifier = Modifier
                 .fillMaxWidth()
                 .horizontalScroll(rememberScrollState()),
-            maxLines = 1
+            maxLines = 1,
+            color = Color.Black
         )
         Spacer(modifier = Modifier.height(3.dp))
         Text(
@@ -297,7 +322,8 @@ fun BottomSheetContent(user: UserDetailed, onHideSheetButton: () -> Unit) {
             Text(
                 text = "Nombre:",
                 fontSize = 18.sp,
-                fontWeight = FontWeight.SemiBold
+                fontWeight = FontWeight.SemiBold,
+                color = Color.Black
             )
             Spacer(modifier = Modifier.width(5.dp))
             Text(
@@ -305,7 +331,8 @@ fun BottomSheetContent(user: UserDetailed, onHideSheetButton: () -> Unit) {
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Medium,
                 maxLines = 1,
-                modifier = Modifier.horizontalScroll(rememberScrollState())
+                modifier = Modifier.horizontalScroll(rememberScrollState()),
+                color = Color.Black
             )
         }
         Spacer(modifier = Modifier.height(10.dp))
@@ -313,7 +340,8 @@ fun BottomSheetContent(user: UserDetailed, onHideSheetButton: () -> Unit) {
             Text(
                 text = "E-mail:",
                 fontSize = 18.sp,
-                fontWeight = FontWeight.SemiBold
+                fontWeight = FontWeight.SemiBold,
+                color = Color.Black
             )
             Spacer(modifier = Modifier.width(5.dp))
             Text(
@@ -321,7 +349,8 @@ fun BottomSheetContent(user: UserDetailed, onHideSheetButton: () -> Unit) {
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Medium,
                 maxLines = 1,
-                modifier = Modifier.horizontalScroll(rememberScrollState())
+                modifier = Modifier.horizontalScroll(rememberScrollState()),
+                color = Color.Black
             )
         }
         Spacer(modifier = Modifier.height(10.dp))
@@ -337,7 +366,8 @@ fun BottomSheetContent(user: UserDetailed, onHideSheetButton: () -> Unit) {
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Medium,
                 maxLines = 1,
-                modifier = Modifier.horizontalScroll(rememberScrollState())
+                modifier = Modifier.horizontalScroll(rememberScrollState()),
+                color = Color.Black
             )
         }
         Spacer(modifier = Modifier.height(10.dp))

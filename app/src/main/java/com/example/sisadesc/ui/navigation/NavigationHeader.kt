@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DrawerState
@@ -56,14 +57,16 @@ fun NavigationHeader(
             Text(
                 text = title,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                color = Color.Black
             )
         },
         navigationIcon = {
             IconButton(onClick = { scope?.launch { drawerState?.open() } }) {
                 Icon(
                     imageVector = Icons.Default.Menu,
-                    contentDescription = "Menu"
+                    contentDescription = "Menu",
+                    tint = Color.DarkGray
                 )
             }
         },
@@ -74,27 +77,46 @@ fun NavigationHeader(
                 } else {
                     Icon(
                         imageVector = Icons.Default.AccountCircle,
-                        contentDescription = "Icon user default"
+                        contentDescription = "Icon user default",
+                        tint = Color.DarkGray
                     )
                 }
             }
-            DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false },
+                modifier = Modifier.background(Color.White)
+            ) {
                 DropdownMenuItem(
                     text = {
-                        Text(text = "Perfil")
+                        Text(text = "Perfil", color = Color.Black)
                     },
                     onClick = {
                         expanded = false
+                    },
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Default.AccountCircle,
+                            contentDescription = "Icono de perfil",
+                            tint = Color.DarkGray
+                        )
                     }
                 )
                 Divider()
                 DropdownMenuItem(
                     text = {
-                        Text(text = "Cerrar sesión")
+                        Text(text = "Cerrar sesión", color = Color.Black)
                     },
                     onClick = {
                         expanded = false
                         logout()
+                    },
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Default.ExitToApp,
+                            contentDescription = "Icono de salir",
+                            tint = Color.DarkGray
+                        )
                     }
                 )
             }

@@ -15,7 +15,9 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            SisadescTheme {
+            SisadescTheme(
+                darkTheme = false
+            ) {
                 AppNavigation()
             }
         }
