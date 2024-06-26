@@ -5,12 +5,14 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.KeyboardArrowRight
+import androidx.compose.material3.DrawerDefaults
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -85,16 +87,14 @@ fun NavigationDrawerSheet(
                 )
             }
         },
+        modifier = Modifier.background(DrawerDefaults.containerColor)
     ) { targetState ->
         when (targetState) {
             true -> {
                 val subMenuItems = items.find {
                     it.uuid == selectedMenuUUID
                 }
-                ModalDrawerSheet(
-//                    drawerContentColor = Color.White,
-//                    drawerContainerColor = Color.White
-                ) {
+                ModalDrawerSheet {
                     Spacer(modifier = Modifier.height(16.dp))
                     IconButton(onClick = {
                         showSubMenu = false
@@ -109,17 +109,8 @@ fun NavigationDrawerSheet(
                         NavigationDrawerItem(
                             label = { Text(text = item.title, color = Color.Black) },
                             selected = item.uuid == selectedSubmenuUUID,
-//                            colors = NavigationDrawerItemDefaults.colors(
-//                                selectedIconColor = Color.DarkGray,
-//                                unselectedIconColor = Color.Gray,
-//                                unselectedTextColor = Color.DarkGray,
-//                                selectedTextColor = Color.Black,
-//                                selectedContainerColor = Color.LightGray,
-//                                unselectedContainerColor = Color.Transparent
-//                            ),
                             onClick = {
                                 selectedSubmenuUUID = item.uuid
-                                //showSubMenu = false
                                 if (currentRoute != item.destination) navController.navigate(item.destination)
                                 scope.launch {
                                     drawerState.close()
@@ -144,10 +135,7 @@ fun NavigationDrawerSheet(
             }
 
             false -> {
-                ModalDrawerSheet(
-//                    drawerContentColor = Color.White,
-//                    drawerContainerColor = Color.White
-                ) {
+                ModalDrawerSheet {
                     Spacer(modifier = Modifier.height(16.dp))
                     items.forEach { item ->
                         val firstItem = item.routes[0]
@@ -156,14 +144,6 @@ fun NavigationDrawerSheet(
                             selected = item.uuid == selectedMenuUUID || selectedSubmenuUUID.contains(
                                 item.uuid
                             ),
-//                            colors = NavigationDrawerItemDefaults.colors(
-//                                selectedIconColor = Color.DarkGray,
-//                                unselectedIconColor = Color.Gray,
-//                                unselectedTextColor = Color.DarkGray,
-//                                selectedTextColor = Color.Black,
-//                                selectedContainerColor = Color.LightGray,
-//                                unselectedContainerColor = Color.Transparent
-//                            ),
                             onClick = {
                                 selectedMenuUUID = item.uuid
                                 if (item.routes.size == 1) {

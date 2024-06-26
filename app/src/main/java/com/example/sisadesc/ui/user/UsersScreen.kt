@@ -46,6 +46,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -62,7 +63,9 @@ import coil.compose.AsyncImagePainter
 import coil.compose.SubcomposeAsyncImage
 import coil.compose.SubcomposeAsyncImageContent
 import com.example.sisadesc.core.model.UserDetailed
+import com.example.sisadesc.ui.theme.PullToRefreshLazyColumn
 import com.example.sisadesc.ui.theme.loadingAnimation
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview
@@ -73,6 +76,7 @@ fun UserScreen(
 ) {
     val users by viewModel!!.users.observeAsState(initial = emptyList())
     val isLoading: Boolean by viewModel!!.loading.observeAsState(initial = false)
+    val scope = rememberCoroutineScope()
 
     val sheetState = rememberModalBottomSheetState(false)
     var isSheetShow by remember {
@@ -82,33 +86,49 @@ fun UserScreen(
         mutableStateOf(null)
     }
 
-    Box(
+    LaunchedEffect(Unit) {
+        viewModel?.getUsers()
+    }
+
+    Surface(
         modifier = Modifier
-            .background(Color.White)
             .fillMaxSize(),
+        color = Color.White
     ) {
-        if (!isLoading) {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                items(users) { user ->
-                    UserCard(user, onClickDetails = {
-                        isSheetShow = true
-                        userSelected = user
-                    })
+        PullToRefreshLazyColumn(
+            items = users ?: emptyList(),
+            content = { user ->
+                UserCard(user, onClickDetails = {
+                    isSheetShow = true
+                    userSelected = user
+                })
+            },
+            isRefreshing = isLoading,
+            onRefresh = {
+                scope.launch {
+                    viewModel?.getUsers()
                 }
             }
-        } else {
-            CircularProgressIndicator()
-        }
+        )
+//            LazyColumn(
+//                modifier = Modifier
+//                    .fillMaxSize(),
+//                horizontalAlignment = Alignment.CenterHorizontally,
+//            ) {
+//                items(users) { user ->
+//                    UserCard(user, onClickDetails = {
+//                        isSheetShow = true
+//                        userSelected = user
+//                    })
+//                }
+//            }
     }
 
     if (isSheetShow && userSelected != null) {
         ModalBottomSheet(
             sheetState = sheetState,
-            onDismissRequest = { isSheetShow = false }
+            onDismissRequest = { isSheetShow = false },
+            contentColor = Color.White
         ) {
             BottomSheetContent(userSelected!!) {
                 isSheetShow = false
@@ -358,7 +378,8 @@ fun BottomSheetContent(user: UserDetailed, onHideSheetButton: () -> Unit) {
             Text(
                 text = "Nombre:",
                 fontSize = 18.sp,
-                fontWeight = FontWeight.SemiBold
+                fontWeight = FontWeight.SemiBold,
+                color = Color.Black
             )
             Spacer(modifier = Modifier.width(5.dp))
             Text(

@@ -8,7 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.sisadesc.core.model.Post
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
-import com.google.firebase.firestore.toObjects
+import com.google.firebase.firestore.toObject
 import kotlinx.coroutines.launch
 
 class PostsViewModel() : ViewModel() {
@@ -18,19 +18,28 @@ class PostsViewModel() : ViewModel() {
     private val _loading = MutableLiveData(false)
     val loading: MutableLiveData<Boolean> = _loading
 
-    fun getPosts() {
+    fun loadData() {
         viewModelScope.launch {
             try {
                 _loading.value = true
+
                 FirebaseFirestore.getInstance()
                     .collection("posts")
                     .orderBy("date", Query.Direction.DESCENDING)
                     .get()
                     .addOnSuccessListener { documents ->
                         if (documents != null) {
-                            val postObjects = documents.toObjects<Post>()
-                            println(postObjects)
-                            _posts.value = postObjects
+                            val postsList = mutableListOf<Post>()
+
+                            documents.forEach {
+                                val post = it.toObject<Post>()
+                                post.id = it.id
+
+                                postsList.add(post)
+                            }
+
+                            println(postsList)
+                            _posts.value = postsList
                         } else {
                             _posts.value = emptyList()
                         }
@@ -38,9 +47,11 @@ class PostsViewModel() : ViewModel() {
                     .addOnFailureListener { exception ->
                         Log.d(TAG, "Error getting documents: ", exception)
                     }
+                    .addOnCompleteListener {
+                        _loading.value = false
+                    }
             } catch (e: Exception) {
                 Log.d(TAG, e.message ?: "")
-            } finally {
                 _loading.value = false
             }
         }

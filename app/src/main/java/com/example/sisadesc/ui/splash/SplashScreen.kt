@@ -15,6 +15,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavController
 import com.example.sisadesc.core.navigation.AppScreens
 import com.example.sisadesc.core.auth.UserViewModel
+import com.example.sisadesc.core.model.UserLogged
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
@@ -26,12 +27,11 @@ fun SplashScreen(
     viewModel: UserViewModel,
 ) {
     val userData by viewModel.userLoggedData.observeAsState(initial = null)
+    val auth: FirebaseAuth = Firebase.auth
 
     LaunchedEffect(key1 = true) {
-        delay(1500)
+        delay(1000)
         navController.popBackStack()
-
-        val auth: FirebaseAuth = Firebase.auth
 
         if (auth.currentUser == null || userData == null) {
             navController.navigate(AppScreens.AuthScreen.route)

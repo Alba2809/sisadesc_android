@@ -65,7 +65,8 @@ fun AppNavigation() {
         ) {
             Scaffold(
                 topBar = {
-                    if (currentRoute != AppScreens.SplashScreen.route && currentRoute != AppScreens.AuthScreen.route) {
+                    if (currentRoute != AppScreens.SplashScreen.route
+                        && currentRoute != AppScreens.AuthScreen.route) {
                         val title = when (currentRoute) {
                             AppScreens.HomeScreen.route -> "Home"
                             AppScreens.UsersScreen.route -> "Usuarios"
@@ -90,7 +91,7 @@ fun AppNavigation() {
                     startDestination = AppScreens.SplashScreen.route,
                     enterTransition = {
                         slideInHorizontally(
-                            initialOffsetX = { it / 2 },
+                            initialOffsetX = { 0 },
                             animationSpec = tween(durationMillis = 1000)
                         )
                     },
@@ -107,23 +108,11 @@ fun AppNavigation() {
                     }
                     composable(
                         route = AppScreens.AuthScreen.route,
-                        enterTransition = {
-                            slideInHorizontally(
-                                initialOffsetX = { it / 2 },
-                                animationSpec = tween(durationMillis = 1000)
-                            )
-                        }
                     ) {
                         LoginScreen(navController, AuthViewModel())
                     }
                     composable(
                         route = AppScreens.HomeScreen.route,
-                        enterTransition = {
-                            slideInHorizontally(
-                                initialOffsetX = { it / 2 },
-                                animationSpec = tween(durationMillis = 1000)
-                            )
-                        },
                     ) {
                         HomeScreen(navController, userViewModel, modifier = Modifier)
                     }
@@ -131,23 +120,11 @@ fun AppNavigation() {
                     // Admin routes
                     composable(
                         route = AppScreens.UsersScreen.route,
-                        enterTransition = {
-                            slideInHorizontally(
-                                initialOffsetX = { it / 2 },
-                                animationSpec = tween(durationMillis = 1000)
-                            )
-                        },
                     ) {
                         UserScreen(navController)
                     }
                     composable(
                         route = AppScreens.PostsScreen.route,
-                        enterTransition = {
-                            slideInHorizontally(
-                                initialOffsetX = { it / 2 },
-                                animationSpec = tween(durationMillis = 1000)
-                            )
-                        },
                     ) {
                         PostsScreen(navController, userLogged = userData)
                     }
