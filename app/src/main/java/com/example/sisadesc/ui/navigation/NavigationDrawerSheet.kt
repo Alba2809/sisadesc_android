@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material3.DrawerDefaults
@@ -100,7 +102,7 @@ fun NavigationDrawerSheet(
                         showSubMenu = false
                     }) {
                         Icon(
-                            imageVector = Icons.Default.KeyboardArrowLeft,
+                            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
                             contentDescription = "Icon de regresar",
                             tint = Color.DarkGray
                         )
@@ -175,7 +177,7 @@ fun NavigationDrawerSheet(
                                     }
                                 } else {
                                     Icon(
-                                        imageVector = Icons.Default.KeyboardArrowRight,
+                                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                                         contentDescription = "Icono de submenu",
                                         tint = Color.DarkGray
                                     )

@@ -16,23 +16,22 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -240,13 +239,13 @@ fun CardHeader(imageUrl: String, onClickDetails: () -> Unit) {
                     },
                     leadingIcon = {
                         Icon(
-                            imageVector = Icons.Default.List,
+                            imageVector = Icons.AutoMirrored.Filled.List,
                             contentDescription = "Icono detalles",
                             tint = Color.DarkGray
                         )
                     }
                 )
-                Divider()
+                HorizontalDivider()
                 DropdownMenuItem(
                     text = {
                         Text(text = "Editar", color = Color.Black)
@@ -263,7 +262,7 @@ fun CardHeader(imageUrl: String, onClickDetails: () -> Unit) {
                         )
                     }
                 )
-                Divider()
+                HorizontalDivider()
                 DropdownMenuItem(
                     text = {
                         Text(

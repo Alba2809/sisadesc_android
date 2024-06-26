@@ -13,9 +13,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavController
-import com.example.sisadesc.core.navigation.AppScreens
 import com.example.sisadesc.core.auth.UserViewModel
-import com.example.sisadesc.core.model.UserLogged
+import com.example.sisadesc.core.navigation.AppScreens
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth

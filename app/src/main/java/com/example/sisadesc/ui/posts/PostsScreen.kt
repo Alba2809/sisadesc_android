@@ -4,7 +4,6 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,7 +14,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -30,6 +28,7 @@ import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
@@ -58,7 +57,6 @@ import androidx.navigation.NavController
 import com.example.sisadesc.core.data.Roles
 import com.example.sisadesc.core.model.UserLogged
 import com.example.sisadesc.ui.theme.PullToRefreshLazyColumn
-import com.example.sisadesc.ui.theme.loadingAnimation
 import com.google.firebase.Timestamp
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -227,7 +225,7 @@ fun CardHeader(userLogged: UserLogged?, onClickEdit: () -> Unit, onClickDelete: 
                             )
                         }
                     )
-                    Divider()
+                    HorizontalDivider()
                     DropdownMenuItem(
                         text = {
                             Text(
