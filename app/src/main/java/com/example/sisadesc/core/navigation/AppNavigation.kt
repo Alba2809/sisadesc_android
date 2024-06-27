@@ -27,6 +27,7 @@ import com.example.sisadesc.ui.auth.LoginScreen
 import com.example.sisadesc.ui.home.HomeScreen
 import com.example.sisadesc.ui.navigation.NavigationDrawerSheet
 import com.example.sisadesc.ui.navigation.NavigationHeader
+import com.example.sisadesc.ui.posts.CreatePostScreen
 import com.example.sisadesc.ui.posts.PostsScreen
 import com.example.sisadesc.ui.splash.SplashScreen
 import com.example.sisadesc.ui.user.UserScreen
@@ -68,13 +69,14 @@ fun AppNavigation() {
                     if (currentRoute != AppScreens.SplashScreen.route
                         && currentRoute != AppScreens.AuthScreen.route) {
                         val title = when (currentRoute) {
-                            AppScreens.HomeScreen.route -> "Home"
-                            AppScreens.UsersScreen.route -> "Usuarios"
-                            AppScreens.PostsScreen.route -> "Avisos"
+                            AppScreens.HomeScreen.route -> AppScreens.HomeScreen.title
+                            AppScreens.UsersScreen.route -> AppScreens.UsersScreen.title
+                            AppScreens.PostsScreen.route -> AppScreens.PostsScreen.title
+                            AppScreens.CreatePostScreen.route -> AppScreens.CreatePostScreen.title
                             else -> ""
                         }
                         NavigationHeader(
-                            title = title,
+                            title = title!!,
                             avatarUrl = userData?.avatarUrl,
                             scope = scope,
                             drawerState = drawerState
@@ -127,6 +129,11 @@ fun AppNavigation() {
                         route = AppScreens.PostsScreen.route,
                     ) {
                         PostsScreen(navController, userLogged = userData)
+                    }
+                    composable(
+                        route = AppScreens.CreatePostScreen.route,
+                    ) {
+                        CreatePostScreen(navController = navController, userLogged = userData)
                     }
                 }
 

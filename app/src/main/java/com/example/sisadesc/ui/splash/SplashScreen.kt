@@ -34,7 +34,9 @@ fun SplashScreen(
 
         if (auth.currentUser == null || userData == null) {
             navController.navigate(AppScreens.AuthScreen.route)
-        } else navController.navigate(AppScreens.HomeScreen.route)
+        } else {
+            navController.navigate(AppScreens.HomeScreen.route)
+        }
     }
     SplashContent()
 }
