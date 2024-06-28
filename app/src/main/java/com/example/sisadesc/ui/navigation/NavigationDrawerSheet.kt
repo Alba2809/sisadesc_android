@@ -1,25 +1,21 @@
 package com.example.sisadesc.ui.navigation
 
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material.icons.filled.KeyboardArrowLeft
-import androidx.compose.material.icons.filled.KeyboardArrowRight
-import androidx.compose.material3.DrawerDefaults
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.DrawerState
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.NavigationDrawerItem
+import androidx.compose.material3.NavigationDrawerItemColors
 import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,6 +24,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -60,131 +57,110 @@ fun NavigationDrawerSheet(
         val homeUUID = items.first().uuid
         mutableStateOf(homeUUID)
     }
+
     var selectedSubmenuUUID by rememberSaveable {
         mutableStateOf("")
     }
-    var showSubMenu by rememberSaveable {
-        mutableStateOf(false)
+
+    var expandedUUID by rememberSaveable {
+        mutableStateOf("")
     }
 
-    AnimatedContent(
-        targetState = showSubMenu,
-        label = "Animated menu",
-        transitionSpec = {
-            if (!this.targetState) {
-                slideInHorizontally(
-                    animationSpec = tween(500),
-                    initialOffsetX = { it }
-                ) togetherWith fadeOut(
-                    animationSpec = tween(500),
-                    targetAlpha = 0f
-                )
-            } else {
-                slideInHorizontally(
-                    animationSpec = tween(500),
-                    initialOffsetX = { it }
-                ) togetherWith fadeOut(
-                    animationSpec = tween(500),
-                    targetAlpha = 0f
-                )
-            }
-        },
-        modifier = Modifier.background(DrawerDefaults.containerColor)
-    ) { targetState ->
-        when (targetState) {
-            true -> {
-                val subMenuItems = items.find {
-                    it.uuid == selectedMenuUUID
-                }
-                ModalDrawerSheet {
-                    Spacer(modifier = Modifier.height(16.dp))
-                    IconButton(onClick = {
-                        showSubMenu = false
-                    }) {
+    ModalDrawerSheet {
+        Spacer(modifier = Modifier.height(16.dp))
+        items.forEach { item ->
+            val firstItem = item.routes[0]
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                contentAlignment = Alignment.TopEnd
+            ) {
+                NavigationDrawerItem(
+                    colors = NavigationDrawerItemDefaults.colors(
+                        selectedContainerColor = if(selectedSubmenuUUID.contains(item.uuid) || item.routes.size == 1) Color(
+                            0xffdbe2f9
+                        ) else Color(0xFFECF0FD)
+                    ),
+                    label = { Text(text = item.mainTitle, color = Color.Black) },
+                    selected = item.uuid == selectedMenuUUID || selectedSubmenuUUID.contains(
+                        item.uuid
+                    ),
+                    onClick = {
+                        selectedMenuUUID = item.uuid
+                        if (item.routes.size == 1) {
+                            scope.launch {
+                                drawerState.close()
+                            }
+
+                            if (currentRoute != firstItem.destination) navController.navigate(
+                                firstItem.destination
+                            )
+                        } else {
+                            expandedUUID = item.uuid
+                        }
+                    },
+                    icon = {
                         Icon(
-                            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
-                            contentDescription = "Icon de regresar",
+                            imageVector = item.mainIcon,
+                            contentDescription = "Icon de ${item.mainTitle}",
                             tint = Color.DarkGray
                         )
-                    }
-                    subMenuItems?.routes?.forEach { item ->
-                        NavigationDrawerItem(
-                            label = { Text(text = item.title, color = Color.Black) },
-                            selected = item.uuid == selectedSubmenuUUID,
-                            onClick = {
-                                selectedSubmenuUUID = item.uuid
-                                if (currentRoute != item.destination) navController.navigate(item.destination)
-                                scope.launch {
-                                    drawerState.close()
-                                }
-                            },
-                            icon = {
-                                Icon(
-                                    imageVector = item.unSelectedIcon,
-                                    contentDescription = "Icon de ${item.title}",
-                                    tint = Color.DarkGray
+                    },
+                    badge = {
+                        if (item.routes.size == 1) {
+                            firstItem.badgeCount?.let {
+                                Text(
+                                    text = firstItem.badgeCount.toString(),
+                                    color = Color.Black
                                 )
+                            }
+                        } else {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                                contentDescription = "Icono de submenu",
+                                tint = Color.DarkGray
+                            )
+                        }
+                    },
+                    modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+                )
+                if (item.routes.size > 1) {
+                    Box(modifier = Modifier.align(Alignment.TopEnd).padding(end = 5.dp)){
+                        DropdownMenu(
+                            expanded = expandedUUID == item.uuid,
+                            onDismissRequest = {
+                                expandedUUID = ""
+                                selectedMenuUUID = ""
                             },
-                            badge = {
-                                item.badgeCount?.let {
-                                    Text(text = item.badgeCount.toString(), color = Color.Black)
-                                }
-                            },
-                            modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
-                        )
-                    }
-                }
-            }
-
-            false -> {
-                ModalDrawerSheet {
-                    Spacer(modifier = Modifier.height(16.dp))
-                    items.forEach { item ->
-                        val firstItem = item.routes[0]
-                        NavigationDrawerItem(
-                            label = { Text(text = item.mainTitle, color = Color.Black) },
-                            selected = item.uuid == selectedMenuUUID || selectedSubmenuUUID.contains(
-                                item.uuid
-                            ),
-                            onClick = {
-                                selectedMenuUUID = item.uuid
-                                if (item.routes.size == 1) {
-                                    selectedSubmenuUUID = ""
-                                    if (currentRoute != firstItem.destination) navController.navigate(
-                                        firstItem.destination
-                                    )
-                                    scope.launch {
-                                        drawerState.close()
-                                    }
-                                } else {
-                                    showSubMenu = true
-                                }
-                            },
-                            icon = {
-                                Icon(
-                                    imageVector = item.mainIcon,
-                                    contentDescription = "Icon de ${item.mainTitle}",
-                                    tint = Color.DarkGray
-                                )
-                            },
-                            badge = {
-                                if (item.routes.size == 1) {
-                                    firstItem.badgeCount?.let {
-                                        Text(
-                                            text = firstItem.badgeCount.toString(),
-                                            color = Color.Black
+                            modifier = Modifier.background(Color.White)
+                        ) {
+                            item.routes.forEach { route ->
+                                DropdownMenuItem(
+                                    text = {
+                                        Text(text = route.title, color = Color.Black)
+                                    },
+                                    onClick = {
+                                        selectedSubmenuUUID = route.uuid
+                                        expandedUUID = ""
+                                        scope.launch {
+                                            drawerState.close()
+                                        }
+                                        if (currentRoute != route.destination) navController.navigate(
+                                            route.destination
                                         )
-                                    }
-                                } else {
-                                    Icon(
-                                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                                        contentDescription = "Icono de submenu",
-                                        tint = Color.DarkGray
-                                    )
-                                }
-                            },
-                            modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
-                        )
+                                    },
+                                    leadingIcon = {
+                                        Icon(
+                                            imageVector = route.selectedIcon,
+                                            contentDescription = "Icono de la ruta",
+                                            tint = Color.DarkGray
+                                        )
+                                    },
+                                    modifier = Modifier
+                                        .background(if (route.uuid == selectedSubmenuUUID) Color(0xffdbe2f9) else Color.White)
+                                )
+                            }
+                        }
                     }
                 }
             }
