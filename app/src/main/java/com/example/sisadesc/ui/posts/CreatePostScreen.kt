@@ -1,5 +1,6 @@
 package com.example.sisadesc.ui.posts
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -33,6 +34,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.sisadesc.core.model.UserLogged
+import com.example.sisadesc.core.navigation.AppScreens
 
 @Preview
 @Composable
@@ -67,8 +69,18 @@ fun CreatePostScreen(
             SubmitButton(
                 isEnableToSend = formState.isEnableToSend,
                 isSending = formState.isSending
-            ){
-                viewModel!!.onSubmitCreateForm(context, navController!!)
+            ) {
+                viewModel!!.onSubmitCreateForm(
+                    onResult = {
+                        Toast.makeText(context, "Aviso guardado correctamente.", Toast.LENGTH_SHORT)
+                            .show()
+                        navController!!.navigate(AppScreens.PostsScreen.route)
+                    },
+                    onError = {
+                        Toast.makeText(context, "Error al guardar el aviso.", Toast.LENGTH_SHORT)
+                            .show()
+                    }
+                )
             }
         }
     }
@@ -152,14 +164,13 @@ fun SubmitButton(isEnableToSend: Boolean, isSending: Boolean, onSubmitForm: () -
         ),
         shape = RoundedCornerShape(10.dp)
     ) {
-        if(isSending){
+        if (isSending) {
             CircularProgressIndicator(
                 color = Color.White,
                 modifier = Modifier.size(20.dp),
                 strokeWidth = 3.dp
             )
-        }
-        else {
+        } else {
             Text(
                 text = "Publicar",
                 style = MaterialTheme.typography.bodyLarge,

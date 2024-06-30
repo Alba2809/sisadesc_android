@@ -10,7 +10,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.sisadesc"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -67,6 +67,10 @@ dependencies {
 
     //AsyncImage
     implementation("io.coil-kt:coil-compose:2.6.0")
+
+    //calendar / time
+    implementation("io.github.boguszpawlowski.composecalendar:composecalendar:1.3.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.5.0")
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

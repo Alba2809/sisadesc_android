@@ -3,6 +3,7 @@ package com.example.sisadesc.core.navigation
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.Create
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Notifications
@@ -67,6 +68,20 @@ sealed class ScreensByRole(val routes: List<NavigationMenu>) {
                             selectedIcon = Icons.Default.Create,
                             unSelectedIcon = Icons.Default.Create,
                             destination = AppScreens.CreatePostScreen.route
+                        )
+                    )
+                ),
+                NavigationMenu(
+                    uuid = "events",
+                    mainTitle = "Eventos",
+                    mainIcon = Icons.Default.DateRange,
+                    routes = listOf(
+                        NavigationItem(
+                            uuid = "events-1",
+                            title = "Eventos",
+                            selectedIcon = Icons.Default.DateRange,
+                            unSelectedIcon = Icons.Default.DateRange,
+                            destination = AppScreens.EventsScreen.route
                         )
                     )
                 ),

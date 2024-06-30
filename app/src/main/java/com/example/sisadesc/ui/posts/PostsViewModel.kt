@@ -76,7 +76,7 @@ class PostsViewModel : ViewModel() {
         }
     }
 
-    fun onSubmitCreateForm(context: Context, navController: NavController) {
+    fun onSubmitCreateForm(onResult: () -> Unit, onError: () -> Unit) {
         viewModelScope.launch {
             try {
                 _formState.value = _formState.value?.copy(isSending = true)
@@ -93,8 +93,8 @@ class PostsViewModel : ViewModel() {
                     .addOnSuccessListener {
                         _formState.value =
                             _formState.value?.copy(isSending = false, errorMessage = "")
-                        Toast.makeText(context, "Aviso guardado correctamente.", Toast.LENGTH_SHORT).show()
-                        navController.navigate(AppScreens.PostsScreen.route)
+                        onResult()
+
                     }
                     .addOnFailureListener { e ->
                         Log.w(TAG, "Error adding document", e)
@@ -102,7 +102,8 @@ class PostsViewModel : ViewModel() {
                             isSending = false,
                             errorMessage = e.message ?: ""
                         )
-                        Toast.makeText(context, "Error al guardar el aviso.", Toast.LENGTH_SHORT).show()
+
+                        onError()
                     }
             } catch (e: Exception) {
                 Log.d(

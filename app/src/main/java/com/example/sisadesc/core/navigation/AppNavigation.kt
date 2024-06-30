@@ -24,6 +24,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.sisadesc.core.auth.UserViewModel
 import com.example.sisadesc.ui.auth.AuthViewModel
 import com.example.sisadesc.ui.auth.LoginScreen
+import com.example.sisadesc.ui.events.EventsScreen
 import com.example.sisadesc.ui.home.HomeScreen
 import com.example.sisadesc.ui.navigation.NavigationDrawerSheet
 import com.example.sisadesc.ui.navigation.NavigationHeader
@@ -103,7 +104,9 @@ fun AppNavigation() {
                             animationSpec = tween(durationMillis = 1000)
                         )
                     },
-                    modifier = Modifier.padding(innerPadding).background(Color.White)
+                    modifier = Modifier
+                        .padding(innerPadding)
+                        .background(Color.White)
                 ) {
                     composable(route = AppScreens.SplashScreen.route) {
                         SplashScreen(navController, userViewModel)
@@ -134,6 +137,11 @@ fun AppNavigation() {
                         route = AppScreens.CreatePostScreen.route,
                     ) {
                         CreatePostScreen(navController = navController, userLogged = userData)
+                    }
+                    composable(
+                        route = AppScreens.EventsScreen.route
+                    ) {
+                        EventsScreen()
                     }
                 }
 
