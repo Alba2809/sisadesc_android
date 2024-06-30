@@ -1,11 +1,11 @@
 package com.example.sisadesc.core.navigation
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
 import com.example.sisadesc.core.model.NavigationItem
@@ -58,8 +58,8 @@ sealed class ScreensByRole(val routes: List<NavigationMenu>) {
                         NavigationItem(
                             uuid = "posts-1",
                             title = "Lista de avisos",
-                            selectedIcon = Icons.Default.List,
-                            unSelectedIcon = Icons.Default.List,
+                            selectedIcon = Icons.AutoMirrored.Filled.List,
+                            unSelectedIcon = Icons.AutoMirrored.Filled.List,
                             destination = AppScreens.PostsScreen.route
                         ),
                         NavigationItem(

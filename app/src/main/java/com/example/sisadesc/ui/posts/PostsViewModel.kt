@@ -1,16 +1,12 @@
 package com.example.sisadesc.ui.posts
 
 import android.content.ContentValues.TAG
-import android.content.Context
 import android.util.Log
-import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.NavController
 import com.example.sisadesc.core.model.Post
-import com.example.sisadesc.core.navigation.AppScreens
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query

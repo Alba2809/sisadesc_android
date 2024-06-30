@@ -54,7 +54,7 @@ fun EventsScreen(
 ) {
     val getDataState by eventsViewModel!!.getDataState.observeAsState(initial = GetDataState())
     val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-    var calendarState = rememberSelectableCalendarState()
+    val calendarState = rememberSelectableCalendarState()
 
     LaunchedEffect(Unit) {
         val currentDate = LocalDate.now()
@@ -78,15 +78,14 @@ fun EventsScreen(
                     dayContent = { dayState ->
                         MyDay(dayState = dayState) {
                             try {
-                                var events: List<Event> = emptyList()
-                                events = getDataState.events.filter { event ->
+                                val events: List<Event> = getDataState.events.filter { event ->
                                     val formattedDate = formatter.format(event.startTime.toDate())
                                     formattedDate.equals(dayState.date.toString())
                                 }
                                 events
                             } catch (e: Exception) {
                                 println("Error parsing date: ${e.message}")
-                                emptyList<Event>()
+                                emptyList()
                             }
                         }
                     }
