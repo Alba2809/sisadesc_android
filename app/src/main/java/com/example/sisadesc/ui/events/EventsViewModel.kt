@@ -11,18 +11,17 @@ import com.google.firebase.firestore.toObjects
 import kotlinx.coroutines.launch
 import java.util.Calendar
 
-data class GetDataState(val isLoading: Boolean = false, val events: List<Event> = emptyList())
-
 class EventsViewModel : ViewModel() {
-    private val _getDataState = MutableLiveData<GetDataState>().apply {
-        value = GetDataState()
-    }
-    val getDataState: LiveData<GetDataState> = _getDataState
+    private val _events = MutableLiveData<List<Event>>()
+    val events: LiveData<List<Event>> = _events
+
+    private val _isLoading = MutableLiveData(false)
+    val isLoading: LiveData<Boolean> = _isLoading
 
     fun getEvents(year: Int, month: Int) {
         viewModelScope.launch {
             try {
-                _getDataState.value = _getDataState.value?.copy(isLoading = true)
+                _isLoading.value = true
 
                 val (startOfMonth, endOfMonth) = getDateRange(year, month)
 
@@ -35,19 +34,20 @@ class EventsViewModel : ViewModel() {
                         if (documents != null) {
                             val eventsList = documents.toObjects<Event>()
                             println(eventsList)
-                            _getDataState.value =
-                                GetDataState(isLoading = false, events = eventsList)
+                            _events.value = eventsList
                         }
+                        _isLoading.value = false
                     }
                     .addOnFailureListener {
                         println(it.message)
-                        _getDataState.value = GetDataState(isLoading = false, events = emptyList())
+                        _events.value = emptyList()
+                        _isLoading.value = false
                     }
             } catch (e: Exception) {
                 println(e.message)
-                _getDataState.value = GetDataState(isLoading = false, events = emptyList())
+                _events.value = emptyList()
+                _isLoading.value = false
             }
-
         }
     }
 

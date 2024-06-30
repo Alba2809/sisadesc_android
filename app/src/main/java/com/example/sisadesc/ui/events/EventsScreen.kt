@@ -1,64 +1,89 @@
 package com.example.sisadesc.ui.events
 
-import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.sisadesc.core.model.Event
 import io.github.boguszpawlowski.composecalendar.SelectableCalendar
 import io.github.boguszpawlowski.composecalendar.day.DayState
 import io.github.boguszpawlowski.composecalendar.rememberSelectableCalendarState
 import io.github.boguszpawlowski.composecalendar.selection.DynamicSelectionState
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
-import java.time.LocalDate
 import java.util.Locale
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Composable
 fun EventsScreen(
     eventsViewModel: EventsViewModel? = EventsViewModel()
 ) {
-    val getDataState by eventsViewModel!!.getDataState.observeAsState(initial = GetDataState())
+    val events by eventsViewModel!!.events.observeAsState(initial = emptyList())
+    val isLoading: Boolean by eventsViewModel!!.isLoading.observeAsState(initial = false)
     val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
     val calendarState = rememberSelectableCalendarState()
 
-    LaunchedEffect(Unit) {
-        val currentDate = LocalDate.now()
-        eventsViewModel!!.getEvents(year = currentDate.year, month = currentDate.monthValue)
+    val sheetState = rememberModalBottomSheetState(true)
+    var isSheetShow by remember {
+        mutableStateOf(false)
+    }
+    var eventsOfDay: List<Event>? by remember {
+        mutableStateOf(null)
+    }
+
+    LaunchedEffect(calendarState.monthState.currentMonth) {
+        println("LaunchedEffect: ${calendarState.monthState.currentMonth}")
+        val yearSelected = calendarState.monthState.currentMonth.year
+        val monthSelected = calendarState.monthState.currentMonth.monthValue
+
+        eventsViewModel!!.getEvents(year = yearSelected, month = monthSelected)
     }
 
     Surface(
@@ -68,99 +93,184 @@ fun EventsScreen(
         color = Color.White
     ) {
         Column(
-            modifier = Modifier
-                .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            if (!getDataState.isLoading) {
+            if (!isLoading) {
                 SelectableCalendar(
-                    modifier = Modifier.background(Color(0xFFFFFFFB)),
+                    modifier = Modifier
+//                        .background(Color(0xFFffffdf),RoundedCornerShape(10.dp))
+                        .border(1.dp, Color.LightGray, RoundedCornerShape(10.dp))
+                        .padding(5.dp),
                     calendarState = calendarState,
                     dayContent = { dayState ->
-                        MyDay(dayState = dayState) {
+                        val eventsDayState = events.filter { event ->
                             try {
-                                val events: List<Event> = getDataState.events.filter { event ->
-                                    val formattedDate = formatter.format(event.startTime.toDate())
-                                    formattedDate.equals(dayState.date.toString())
-                                }
-                                events
+                                val formattedDate =
+                                    formatter.format(event.startTime.toDate())
+                                formattedDate.equals(dayState.date.toString())
                             } catch (e: Exception) {
                                 println("Error parsing date: ${e.message}")
-                                emptyList()
+                                false
                             }
+                        }
+
+                        MyDay(
+                            dayState = dayState,
+                            events = eventsDayState
+                        ) { eventsOfDaySelected ->
+                            eventsOfDay = eventsOfDaySelected
+                            isSheetShow = true
                         }
                     }
                 )
-                SelectionControls(selectionState = calendarState.selectionState)
-            } else Text(text = "Cargando...")
-
+            } else LinearProgressIndicator()
         }
-
+    }
+    if (isSheetShow && eventsOfDay != null) {
+        ModalBottomSheet(
+            sheetState = sheetState,
+            containerColor = Color.White,
+            onDismissRequest = {
+                isSheetShow = false
+            },
+            contentColor = Color.White
+        ) {
+            BottomSheetContent(eventsOfDay!!) {
+                isSheetShow = false
+            }
+        }
     }
 }
 
-@Preview
 @Composable
-fun MyCalendarPreview() {
-    val calState = rememberSelectableCalendarState()
+fun BottomSheetContent(events: List<Event>, onHideSheetButton: () -> Unit) {
+    val formatter = SimpleDateFormat("hh:mm a", Locale.getDefault())
+
     Column(
         modifier = Modifier
-            .verticalScroll(rememberScrollState())
-            .fillMaxSize()
-            .background(Color.White)
-            .padding(15.dp)
+            .padding(16.dp)
     ) {
-        SelectableCalendar(
-            modifier = Modifier.background(Color(0xFFFFFFFB)),
-            calendarState = calState,
-            dayContent = { dayState ->
-                MyDay(dayState = dayState) {
-                    val event = Event()
-                    if (dayState.isCurrentDay) listOf(event)
-                    else emptyList<Event>()
+        HeaderEventData()
+
+        Spacer(modifier = Modifier.height(10.dp))
+
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(max = 400.dp),
+            verticalArrangement = Arrangement.spacedBy(5.dp)
+        ) {
+            items(events) { event ->
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(5.dp)
+                ) {
+                    FieldEventData(
+                        modifier = Modifier.weight(1f),
+                        value = event.description,
+                    )
+                    FieldEventData(
+                        modifier = Modifier.width(100.dp),
+                        value = formatter.format(event.startTime.toDate()),
+                    )
+                    FieldEventData(
+                        modifier = Modifier.width(100.dp),
+                        value = formatter.format(event.endTime.toDate()),
+                    )
                 }
             }
-        )
+        }
 
-        SelectionControls(selectionState = calState.selectionState)
+        Spacer(modifier = Modifier.height(10.dp))
+
+        Button(
+            onClick = { onHideSheetButton() },
+            modifier = Modifier
+                .fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color.Black,
+            ),
+            shape = RoundedCornerShape(10.dp)
+        ) {
+            Text(
+                text = "Cerrar",
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Medium,
+                fontSize = 15.sp,
+                color = Color.White
+            )
+        }
     }
 }
 
 @Composable
-fun MyDay(dayState: DayState<DynamicSelectionState>, getEvents: () -> List<Event>) {
-    val events = getEvents()
+fun HeaderEventData() {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(5.dp)
+    ) {
+        Text(
+            text = "Descripción",
+            fontSize = 15.sp,
+            fontWeight = FontWeight.Medium,
+            color = Color.DarkGray,
+            modifier = Modifier.weight(1f),
+            textAlign = TextAlign.Center
+        )
+        Text(
+            text = "Inicio",
+            fontSize = 15.sp,
+            fontWeight = FontWeight.Medium,
+            color = Color.DarkGray,
+            modifier = Modifier.width(100.dp),
+            textAlign = TextAlign.Center
+        )
+        Text(
+            text = "Final",
+            fontSize = 15.sp,
+            fontWeight = FontWeight.Medium,
+            color = Color.DarkGray,
+            modifier = Modifier.width(100.dp),
+            textAlign = TextAlign.Center
+        )
+    }
+}
+
+@Composable
+fun FieldEventData(modifier: Modifier? = Modifier, value: String) {
+    TextField(
+        modifier = modifier!!,
+        textStyle = TextStyle(fontSize = 15.sp),
+        value = value,
+        onValueChange = { },
+        readOnly = true,
+        colors = TextFieldDefaults.colors(
+            focusedContainerColor = Color.Transparent,
+            unfocusedContainerColor = Color.Transparent,
+        ),
+        singleLine = true,
+        maxLines = 1,
+    )
+}
+
+@Composable
+fun MyDay(
+    dayState: DayState<DynamicSelectionState>,
+    events: List<Event>,
+    onSelectDay: (List<Event>) -> Unit
+) {
+    println("MyDay(${dayState.date}): $events")
     val backgroundColor =
         if (dayState.selectionState.isDateSelected(dayState.date)) Color(0xFFFFD3CF) else Color.Transparent
-    val infiniteTransition = rememberInfiniteTransition(label = "infinite")
-    // Create an Animatable object to animate the offset
-    val offsetY = remember { Animatable(0f) }
-
-    // Launch a coroutine to perform the infinite animation
-    LaunchedEffect(Unit) {
-        launch {
-            while (true) {
-                offsetY.animateTo(
-                    targetValue = 10f,
-                    animationSpec = tween(
-                        durationMillis = 500,
-                        easing = LinearEasing
-                    )
-                )
-                offsetY.animateTo(
-                    targetValue = 0f,
-                    animationSpec = tween(
-                        durationMillis = 500,
-                        easing = LinearEasing
-                    )
-                )
-                delay(100) // Optional delay between animations
-            }
-        }
-    }
 
     if (dayState.isFromCurrentMonth) {
         Button(
             onClick = {
                 dayState.selectionState.selection = listOf(dayState.date)
+                if (events.isNotEmpty()) onSelectDay(events)
             },
             modifier = Modifier
                 .padding(1.dp)
@@ -178,7 +288,6 @@ fun MyDay(dayState: DayState<DynamicSelectionState>, getEvents: () -> List<Event
                     color = if (events.isNotEmpty()) Color.Red else Color.Black,
                 )
                 if (events.isNotEmpty()) {
-//                    InfiniteAnimationIcon(Modifier.align(Alignment.TopEnd))
                     Icon(
                         imageVector = Icons.Default.KeyboardArrowDown,
                         contentDescription = "Icono de estrella",
@@ -194,49 +303,3 @@ fun MyDay(dayState: DayState<DynamicSelectionState>, getEvents: () -> List<Event
     }
 }
 
-@Composable
-fun InfiniteAnimationIcon(modifier: Modifier) {
-    // Create an Animatable object to animate the offset
-    val offsetY = remember { Animatable(0f) }
-
-    // Launch a coroutine to perform the infinite animation
-    LaunchedEffect(Unit) {
-        launch {
-            while (true) {
-                offsetY.animateTo(
-                    targetValue = -10f,
-                    animationSpec = tween(
-                        durationMillis = 500,
-                        easing = LinearEasing
-                    )
-                )
-                offsetY.animateTo(
-                    targetValue = -5f,
-                    animationSpec = tween(
-                        durationMillis = 500,
-                        easing = LinearEasing
-                    )
-                )
-                delay(100) // Optional delay between animations
-            }
-        }
-    }
-
-    Icon(
-        imageVector = Icons.Default.KeyboardArrowDown,
-        contentDescription = "Icono de estrella",
-        modifier = modifier
-            .size(15.dp)
-            .offset(y = offsetY.value.dp, x = 8.dp),
-        tint = Color.Red
-    )
-}
-
-@Composable
-private fun SelectionControls(
-    selectionState: DynamicSelectionState,
-) {
-    Text(
-        text = "Selection: ${selectionState.selection.joinToString { it.toString() }}",
-    )
-}

@@ -74,6 +74,7 @@ fun AppNavigation() {
                             AppScreens.UsersScreen.route -> AppScreens.UsersScreen.title
                             AppScreens.PostsScreen.route -> AppScreens.PostsScreen.title
                             AppScreens.CreatePostScreen.route -> AppScreens.CreatePostScreen.title
+                            AppScreens.EventsScreen.route -> AppScreens.EventsScreen.title
                             else -> ""
                         }
                         NavigationHeader(

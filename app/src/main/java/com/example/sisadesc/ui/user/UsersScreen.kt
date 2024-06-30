@@ -109,18 +109,6 @@ fun UserScreen(
                 }
             }
         )
-//            LazyColumn(
-//                modifier = Modifier
-//                    .fillMaxSize(),
-//                horizontalAlignment = Alignment.CenterHorizontally,
-//            ) {
-//                items(users) { user ->
-//                    UserCard(user, onClickDetails = {
-//                        isSheetShow = true
-//                        userSelected = user
-//                    })
-//                }
-//            }
     }
 
     if (isSheetShow && userSelected != null) {
