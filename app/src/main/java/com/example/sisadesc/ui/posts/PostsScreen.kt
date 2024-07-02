@@ -246,7 +246,6 @@ fun CardHeader(userLogged: UserLogged?, onClickEdit: () -> Unit, onClickDelete: 
                     )
                 }
             }
-
         }
     }
 

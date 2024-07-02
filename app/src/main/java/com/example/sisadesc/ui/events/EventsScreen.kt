@@ -1,6 +1,8 @@
 package com.example.sisadesc.ui.events
 
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -21,11 +23,18 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -44,13 +53,18 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.sisadesc.core.auth.UserViewModel
+import com.example.sisadesc.core.data.Roles
 import com.example.sisadesc.core.model.Event
+import com.example.sisadesc.core.model.UserLogged
+import com.google.firebase.Timestamp
 import io.github.boguszpawlowski.composecalendar.SelectableCalendar
 import io.github.boguszpawlowski.composecalendar.day.DayState
 import io.github.boguszpawlowski.composecalendar.rememberSelectableCalendarState
@@ -59,13 +73,15 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview
 @Composable
 fun EventsScreen(
-    eventsViewModel: EventsViewModel? = EventsViewModel()
+    eventsViewModel: EventsViewModel? = EventsViewModel(),
+    userViewModel: UserViewModel? = UserViewModel()
 ) {
     val events by eventsViewModel!!.events.observeAsState(initial = emptyList())
     val isLoading: Boolean by eventsViewModel!!.isLoading.observeAsState(initial = false)
+    val userLogged by userViewModel!!.userLoggedData.observeAsState()
+    val isLoadingUserData by userViewModel!!.loading.observeAsState(initial = true)
     val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
     val calendarState = rememberSelectableCalendarState()
 
@@ -78,7 +94,6 @@ fun EventsScreen(
     }
 
     LaunchedEffect(calendarState.monthState.currentMonth) {
-        println("LaunchedEffect: ${calendarState.monthState.currentMonth}")
         val yearSelected = calendarState.monthState.currentMonth.year
         val monthSelected = calendarState.monthState.currentMonth.monthValue
 
@@ -98,7 +113,6 @@ fun EventsScreen(
             if (!isLoading) {
                 SelectableCalendar(
                     modifier = Modifier
-//                        .background(Color(0xFFffffdf),RoundedCornerShape(10.dp))
                         .border(1.dp, Color.LightGray, RoundedCornerShape(10.dp))
                         .padding(5.dp),
                     calendarState = calendarState,
@@ -109,7 +123,6 @@ fun EventsScreen(
                                     formatter.format(event.startTime.toDate())
                                 formattedDate.equals(dayState.date.toString())
                             } catch (e: Exception) {
-                                println("Error parsing date: ${e.message}")
                                 false
                             }
                         }
@@ -126,7 +139,7 @@ fun EventsScreen(
             } else LinearProgressIndicator()
         }
     }
-    if (isSheetShow && eventsOfDay != null) {
+    if (isSheetShow && eventsOfDay != null && !isLoadingUserData) {
         ModalBottomSheet(
             sheetState = sheetState,
             containerColor = Color.White,
@@ -135,22 +148,51 @@ fun EventsScreen(
             },
             contentColor = Color.White
         ) {
-            BottomSheetContent(eventsOfDay!!) {
+            BottomSheetContent(eventsOfDay!!, userLogged?.roleData?.name ?: "") {
                 isSheetShow = false
             }
         }
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview
 @Composable
-fun BottomSheetContent(events: List<Event>, onHideSheetButton: () -> Unit) {
+fun PreviewBottomSheet() {
+    val sheetState = rememberModalBottomSheetState()
+    var isSheetShow by remember {
+        mutableStateOf(true)
+    }
+    val eventsOfDay = listOf(
+        Event("1", "evento 1", Timestamp.now(), Timestamp.now()),
+        Event("2", "evento 2", Timestamp.now(), Timestamp.now()),
+        Event("3", "evento 3", Timestamp.now(), Timestamp.now()),
+    )
+
+
+    ModalBottomSheet(
+        sheetState = sheetState,
+        containerColor = Color.White,
+        onDismissRequest = {
+            isSheetShow = false
+        },
+        contentColor = Color.White
+    ) {
+        BottomSheetContent(eventsOfDay, "admin") {
+            isSheetShow = false
+        }
+    }
+}
+
+@Composable
+fun BottomSheetContent(events: List<Event>, rolUser: String, onHideSheetButton: () -> Unit) {
     val formatter = SimpleDateFormat("hh:mm a", Locale.getDefault())
 
     Column(
         modifier = Modifier
             .padding(16.dp)
     ) {
-        HeaderEventData()
+        HeaderEventData(rolUser)
 
         Spacer(modifier = Modifier.height(10.dp))
 
@@ -178,6 +220,11 @@ fun BottomSheetContent(events: List<Event>, onHideSheetButton: () -> Unit) {
                         modifier = Modifier.width(100.dp),
                         value = formatter.format(event.endTime.toDate()),
                     )
+                    if (rolUser == Roles.Admin.name) {
+                        Column(modifier = Modifier.align(Alignment.CenterVertically)) {
+                            ActionsAdmin(modifier = Modifier)
+                        }
+                    }
                 }
             }
         }
@@ -205,7 +252,72 @@ fun BottomSheetContent(events: List<Event>, onHideSheetButton: () -> Unit) {
 }
 
 @Composable
-fun HeaderEventData() {
+fun ActionsAdmin(modifier: Modifier? = Modifier) {
+    var expanded by remember {
+        mutableStateOf(false)
+    }
+    val context = LocalContext.current
+
+    IconButton(
+        onClick = { expanded = !expanded },
+        modifier = Modifier
+            .size(30.dp)
+    ) {
+        Icon(
+            imageVector = Icons.Default.MoreVert,
+            contentDescription = "Icono de ver más",
+            tint = Color.Gray
+        )
+
+    }
+    DropdownMenu(
+        expanded = expanded,
+        onDismissRequest = { expanded = false },
+        modifier = Modifier
+            .background(Color.White)
+            .padding(top = 0.dp, bottom = 0.dp)
+    ) {
+        DropdownMenuItem(
+            text = {
+                Text(text = "Editar", color = Color.Black)
+            },
+            onClick = {
+                expanded = false
+                Toast.makeText(context, "Sin implementar.", Toast.LENGTH_SHORT).show()
+            },
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Default.Edit,
+                    contentDescription = "Icono de editar",
+                    tint = Color.DarkGray
+                )
+            }
+        )
+        HorizontalDivider()
+        DropdownMenuItem(
+            text = {
+                Text(
+                    text = "Eliminar",
+                    color = Color.Red
+                )
+            },
+            onClick = {
+                expanded = false
+                Toast.makeText(context, "Sin implementar.", Toast.LENGTH_SHORT).show()
+            },
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = "Icono de eliminar",
+                    tint = Color.Red
+                )
+            }
+        )
+    }
+}
+
+@Composable
+fun HeaderEventData(rolUser: String) {
     Row(
         modifier = Modifier
             .fillMaxWidth(),
@@ -235,6 +347,16 @@ fun HeaderEventData() {
             modifier = Modifier.width(100.dp),
             textAlign = TextAlign.Center
         )
+        if (rolUser == Roles.Admin.name) {
+            Text(
+                text = "",
+                fontSize = 15.sp,
+                fontWeight = FontWeight.Medium,
+                color = Color.DarkGray,
+                modifier = Modifier.width(40.dp),
+                textAlign = TextAlign.Center
+            )
+        }
     }
 }
 
@@ -261,7 +383,6 @@ fun MyDay(
     events: List<Event>,
     onSelectDay: (List<Event>) -> Unit
 ) {
-    println("MyDay(${dayState.date}): $events")
     val backgroundColor =
         if (dayState.selectionState.isDateSelected(dayState.date)) Color(0xFFFFD3CF) else Color.Transparent
 
