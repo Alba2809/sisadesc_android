@@ -105,7 +105,7 @@ fun NavigationHeader(
                 HorizontalDivider()
                 DropdownMenuItem(
                     text = {
-                        Text(text = "Cerrar sesión", color = Color.Black)
+                        Text(text = "Cerrar sesión", color = Color.Red)
                     },
                     onClick = {
                         expanded = false
@@ -115,7 +115,7 @@ fun NavigationHeader(
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ExitToApp,
                             contentDescription = "Icono de salir",
-                            tint = Color.DarkGray
+                            tint = Color.Red
                         )
                     }
                 )

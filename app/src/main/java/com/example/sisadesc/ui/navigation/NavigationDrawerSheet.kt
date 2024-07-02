@@ -64,6 +64,8 @@ fun NavigationDrawerSheet(
         mutableStateOf("")
     }
 
+
+
     ModalDrawerSheet {
         Spacer(modifier = Modifier.height(16.dp))
         items.forEach { item ->
@@ -90,9 +92,10 @@ fun NavigationDrawerSheet(
                                 drawerState.close()
                             }
 
-                            if (currentRoute != firstItem.destination) navController.navigate(
-                                firstItem.destination
-                            )
+                            if (currentRoute != firstItem.destination) {
+                                selectedSubmenuUUID = ""
+                                navController.navigate(firstItem.destination)
+                            }
                         } else {
                             expandedUUID = item.uuid
                         }
@@ -123,7 +126,9 @@ fun NavigationDrawerSheet(
                     modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
                 )
                 if (item.routes.size > 1) {
-                    Box(modifier = Modifier.align(Alignment.TopEnd).padding(end = 5.dp)){
+                    Box(modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(end = 5.dp)){
                         DropdownMenu(
                             expanded = expandedUUID == item.uuid,
                             onDismissRequest = {

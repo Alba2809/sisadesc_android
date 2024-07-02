@@ -33,7 +33,6 @@ class EventsViewModel : ViewModel() {
                     .addOnSuccessListener { documents ->
                         if (documents != null) {
                             val eventsList = documents.toObjects<Event>()
-                            println(eventsList)
                             _events.value = eventsList
                         }
                         _isLoading.value = false

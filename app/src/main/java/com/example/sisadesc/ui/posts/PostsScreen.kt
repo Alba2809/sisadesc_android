@@ -1,5 +1,6 @@
 package com.example.sisadesc.ui.posts
 
+import android.widget.Toast
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -45,6 +46,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -70,6 +72,7 @@ fun PostsScreen(
     val posts by viewModel!!.posts.observeAsState(initial = emptyList())
     val isLoading: Boolean by viewModel!!.loading.observeAsState(initial = false)
     val scope = rememberCoroutineScope()
+    val context = LocalContext.current
 
     LaunchedEffect(Unit) {
         viewModel?.loadData()
@@ -89,10 +92,10 @@ fun PostsScreen(
                     description = post.description,
                     date = post.date,
                     onClickEdit = {
-                        navController.navigate("edit/post/${post.id}")
+                        Toast.makeText(context, "Sin implementar.", Toast.LENGTH_SHORT).show()
                     },
                     onClickDelete = {
-
+                        Toast.makeText(context, "Sin implementar.", Toast.LENGTH_SHORT).show()
                     }
                 )
             },

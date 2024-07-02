@@ -44,8 +44,8 @@ sealed class ScreensByRole(val routes: List<NavigationMenu>) {
                         NavigationItem(
                             uuid = "users-2",
                             title = "Registrar usuario",
-                            selectedIcon = Icons.Default.Person,
-                            unSelectedIcon = Icons.Default.Person,
+                            selectedIcon = Icons.Default.Create,
+                            unSelectedIcon = Icons.Default.Create,
                             destination = AppScreens.UsersScreen.route
                         )
                     )
